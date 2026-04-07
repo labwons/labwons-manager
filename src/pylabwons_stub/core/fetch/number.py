@@ -39,7 +39,7 @@ class Number(DataFrameHeir):
     def fetch(self, *tickers:str):
         tic = time.perf_counter()
         obj = FnGuide(tickers[0])
-        self.logger(f'FETCH MARKET NUMBERS ON {obj.date}')
+        self.logger(f'| FETCH MARKET NUMBERS ON {obj.date}')
 
         if self.progress_bar:
             loop = auto.tqdm(enumerate(tickers[1:]))
@@ -59,7 +59,7 @@ class Number(DataFrameHeir):
 
         super().__init__(pd.concat(objs, axis=1).T)
         self._typecast()
-        self.logger(f'{"." * 30} {len(self)} STOCKS / RUNTIME: {time.perf_counter() - tic:.2f}s')
+        self.logger(f'>>> {len(self)} STOCKS / RUNTIME: {time.perf_counter() - tic:.2f}s')
         return
 
     @property

@@ -44,7 +44,7 @@ class Baseline(DataFrameHeir):
         return
 
     def _capture_baseline(self, *args):
-        self.logger(f'CAPTURE NEW BASELINE ON {self.log.market.date}')
+        self.logger(f'| CAPTURE BASELINE ON {self.log.market.date}')
         super().__init__(*args, method='join')
 
         self._typecast()
@@ -129,10 +129,10 @@ class Baseline(DataFrameHeir):
         status = "OPEN" if self.td.is_open() else "CLOSED"
         self.logger(f'[BUILD BASELINE]')
         self.logger(f'| TRADING DATE: {self.td.latest} ({status})')
-        self.logger(f'| TICKETS: {"NO TICKETS" if not tickets else tickets}')
+        self.logger(f'| TICKETS: {"NO TICKETS" if not tickets else ", ".join(tickets).upper()}')
 
         if 'market' in tickets:
-            try:            
+            try:
                 self.market.fetch()
                 self.market.to_parquet(PATH.PARQUET.MARKET, engine='pyarrow')
                 self.log.prices.time = self.log.market.date = self.market.lap
@@ -175,18 +175,15 @@ class Baseline(DataFrameHeir):
             with open(PATH.JSON.BUILD, 'w', encoding='utf-8') as f:
                 json.dump(self.log, f, ensure_ascii=False, indent=4)
 
-        self.logger('| LOG')
         for key, value in self.log.items():
             if key == 'baseline':
-                self.logger(f'>>> {key} ON {value.date}')
-                self.logger(f'    - WINDOW LOG: {value.log[0]} ~ {value.log[-1]} ({len(value.log)})' \
+                self.logger(f'>>> {key.upper()} ON {value.date}')
+                self.logger(f'>>> - LOGS({len(value.log)}): {value.log[0]} ~ {value.log[-1]}' \
                             .replace(".parquet", "") \
-                            .replace(".baseline-", ""))
+                            .replace("baseline-", ""))
                 continue
-            if key == 'prices':
-                self.logger(f'>>> {key} ON {value.time}')
-            else:
-                self.logger(f'>>> {key} ON {value.date}')
+
+            self.logger(f'>>> {key.upper()} ON {value.time if key == 'prices' else value.date}')
         return
 
 

@@ -22,7 +22,7 @@ class Market(DataFrameHeir):
 
     def __call__(self, _name:str, _func, **_kwargs) -> DataFrame:
         try:
-            self.logger(f'>>> [{_name}]', end=' ... ')
+            self.logger(f'>>> {_name}', end=' ... ')
             df = _func(**_kwargs)
             self.logger('OK')
             return df
@@ -33,7 +33,7 @@ class Market(DataFrameHeir):
     def fetch(self):
         tic = time.perf_counter()
         self.lap = self.td.clock('%Y%m%d %H:%M') if self.td.is_open() else f'{self.td.closed} 15:30'
-        self.logger(f'FETCH MARKET DATA ON {self.lap}')
+        self.logger(f'| FETCH MARKET DATA ON {self.lap}')
 
         caps = self("MARKET CAP", self.fetch_market_cap, date=self.td.latest)
         objs = [self("GENERAL INFO", self.fetch_general), caps,
@@ -51,11 +51,11 @@ class Market(DataFrameHeir):
         except (KeyError, Exception) as e:
             raise ConnectionError(e)
 
-        self.logger(f'FETCH OK: {len(self)} STOCKS / RUNTIME: {time.perf_counter() - tic:.2f}s')
+        self.logger(f'>>> {len(self)} STOCKS / RUNTIME: {time.perf_counter() - tic:.2f}s')
         return
 
     def fetch_close(self, caps:DataFrame) -> DataFrame:
-        self.logger(f'>>> [MARKET PRICE]')
+        self.logger(f'>>> [MARKET PRICE]', end=' ... ')
         basis = caps.copy()
         close = pd.read_parquet(PATH.PARQUET.PRICES, engine='pyarrow')
 
@@ -64,9 +64,11 @@ class Market(DataFrameHeir):
         r_columns = [td.closed] + [td - n for n in SCHEMA.YIELD_DAYS.values()]
         c_columns = sorted(close.columns.levels[0].tolist(), reverse=True)
         if r_columns == c_columns:
-            self.logger(f'>>> | UPDATE LATEST: {c_columns}')
             basis.columns = MultiIndex.from_tuples([(td.closed, c) for c in basis])
             close.update(basis)
+            self.logger('OK')
+            for d, n in zip(c_columns[1:], SCHEMA.YIELD_DAYS.values()):
+                self.logger(f'>>> | D-{n}: {d}')
             return close
 
         # 기본 데이터 설정
@@ -93,7 +95,9 @@ class Market(DataFrameHeir):
         close.columns = MultiIndex.from_tuples([(td - n, 'close') for n in SCHEMA.YIELD_DAYS.values()])
         data.update(close)
         data.to_parquet(PATH.PARQUET.PRICES, engine='pyarrow')
-        self.logger(f'>>> | UPDATE ALL: {data.columns.levels[0].tolist()}')
+        self.logger('OK')
+        for d, n in zip(data.columns.levels[0].tolist()[1:], SCHEMA.YIELD_DAYS.values()):
+            self.logger(f'>>> | D-{n}: {d}')
         return data
 
     @staticmethod

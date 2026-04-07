@@ -18,7 +18,7 @@ class MarketMap(Baseline):
 
     def __init__(self, logger:Callable=print):
         super().__init__(logger)
-        self.logger(f'DEPLOY MARKET MAP ON {self.log.baseline.date}')
+        self.logger(f'| DEPLOY MARKET MAP ON {self.log.baseline.date}')
 
         self._extract()
         self._stack(by='industryName')

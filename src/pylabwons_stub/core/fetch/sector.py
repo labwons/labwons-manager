@@ -19,14 +19,14 @@ class Sector(DataFrameHeir):
     def fetch(self):
         tic = time.perf_counter()
         try:
-            self.logger(f'FETCH MARKET SECTORS ON {self.server_date}')
+            self.logger(f'| FETCH MARKET SECTORS ON {self.server_date}')
 
             objs = []
             for n, (code, name) in enumerate(SCHEMA.CODES.items(), start=1):
                 self.logger(f'>>> [{str(n).zfill(2)}/{len(SCHEMA.CODES)}] {name}@{code}', end=' ... ')
                 obj = self._fetch_group(code, self.server_date, logger=self.logger)
                 if obj.empty:
-                    raise ConnectionError(f'FAILED TO FETCH {code} / {name}')
+                    raise ConnectionError(f'>>> FAILED TO FETCH {code} / {name}')
                 objs.append(obj)
 
             reits = DataFrame(data={'CMP_KOR': SCHEMA.REITS.values(), 'CMP_CD': SCHEMA.REITS.keys()})
@@ -56,10 +56,10 @@ class Sector(DataFrameHeir):
             exceptions = DataFrame(adder).T
             data = pd.concat(objs=[data, exceptions], axis=0)
             data['wicsDate'] = self.server_date
-            self.logger(f'{"." * 30} {len(data)} STOCKS / RUNTIME: {time.perf_counter() -  tic:.2f}s')
+            self.logger(f'>>> {len(data)} STOCKS / RUNTIME: {time.perf_counter() -  tic:.2f}s')
             super().__init__(data)
         except (ConnectionError, Exception, TimeoutError) as reason:
-            self.logger(f'FAILED TO FETCH WICS: {reason} / RUNTIME: {time.perf_counter() -  tic:.2f}s')
+            self.logger(f'>>> FAILED TO FETCH WICS: {reason} / RUNTIME: {time.perf_counter() -  tic:.2f}s')
             raise ConnectionError(reason)
         return
 
@@ -91,7 +91,7 @@ class Sector(DataFrameHeir):
                 return DataFrame()
             else:
                 time.sleep(5)
-                return Wics._fetch_group(code, date, countdown - 1)
+                return Sector._fetch_group(code, date, countdown - 1)
         if "hmg-corp" in resp.text:
             logger(f'NG: BLOCKED')
             return DataFrame()

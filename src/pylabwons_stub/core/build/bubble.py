@@ -19,7 +19,7 @@ class MarketBubble(Baseline):
 
     def __init__(self, logger:Callable=print):
         super().__init__(logger)
-        self.logger(f'DEPLOY MARKET BUBBLE ON {self.log.baseline.date}')
+        self.logger(f'| DEPLOY MARKET BUBBLE ON {self.log.baseline.date}')
 
         self._extract()
         self._scaling()
