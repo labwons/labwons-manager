@@ -183,7 +183,7 @@ class Baseline(DataFrameHeir):
                             .replace("baseline-", ""))
                 continue
 
-            self.logger(f'>>> {key.upper()} ON {value.time if key == 'prices' else value.date}')
+            self.logger(f'>>> {key.upper()} ON {value.time if key == "prices" else value.date}')
         return
 
 
