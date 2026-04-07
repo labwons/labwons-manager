@@ -36,12 +36,7 @@ class Release(Baseline):
                 continue
             if "Unable to cast" in line:
                 continue
-            line = line[20:] \
-                   .replace(": {'date': '", " @") \
-                   .replace(": {'time': '", " @") \
-                   .replace("'}", "") \
-                   .replace("',", "")
-            note += f"{line}\n"
+            note += f"{line[20:]}\n"
         return note
 
     @property

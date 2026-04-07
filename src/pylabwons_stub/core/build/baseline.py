@@ -177,7 +177,14 @@ class Baseline(DataFrameHeir):
 
         self.logger('| LOG')
         for key, value in self.log.items():
-            self.logger(f'>>> {key}: {value}')
+            if key == 'baseline':
+                self.logger(f'>>> {key} ON {value.date}')
+                self.logger(f'    - WINDOW LOG: {value.log[0]} ~ {value.log[-1]}'.replace(".parquet", ""))
+                continue
+            if key == 'prices':
+                self.logger(f'>>> {key} ON {value.time}')
+            else:
+                self.logger(f'>>> {key} ON {value.date}')
         return
 
 
