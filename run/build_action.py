@@ -29,7 +29,9 @@ if __name__ == "__main__":
         if not 'BREVO' in os.environ:
             raise SystemExit
 
+        logger(f'[RELEASE]')
         release.as_excel()
+        logger(f'| RELEASE EXCEL')
 
         mail = lws.Mailing(api=os.environ['BREVO'], logger=logger)
         mail.sender.name = release.ID

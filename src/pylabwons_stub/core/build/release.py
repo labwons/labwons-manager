@@ -64,7 +64,7 @@ class Release(Baseline):
 
     @property
     def path(self) -> Path:
-        return PATH.DATA / 'src/release/BASELINE.xlsx'
+        return PATH.DATA / 'release/BASELINE.xlsx'
 
     @property
     def schema(self) -> DataFrame:
