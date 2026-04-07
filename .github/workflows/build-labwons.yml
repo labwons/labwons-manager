@@ -1,0 +1,84 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: BUILD LABWONS
+
+on:
+  schedule:
+    # KST 09:00AM ~ 16:30PM (UTC 00:00 ~ 07:00) EVERY 30MIN. MON.- FRI.
+    - cron: '*/30 0-7 * * 1-5'
+    # KST 6:00AM
+    - cron: '0 21 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Checkout LABWONS repository
+      uses: actions/checkout@v4
+      with:
+        repository: labwons/labwons
+        token: ${{ secrets.PAT_LABWONS }}
+        path: repo
+    
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+
+    - name: Set Git Config
+      run: |
+        git config --global user.name 'labwons.machine'
+        git config --global user.email 'snob.labwons@gmail.com'
+        echo "TIMESTAMP=$(TZ='Asia/Seoul' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+    - name: Build
+      env:
+        KRX_ID: ${{ secrets.KRX_ID }}
+        KRX_PW: ${{ secrets.KRX_PW }}
+        BREVO : ${{ secrets.BREVO_API }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_ID   : ${{ secrets.TELEGRAM_ID }}
+      run: |
+        python run/build_action.py    
+
+    - name: Deploy
+      run : |
+        cp data/src/html/marketmap.html repo/docs/index.html
+        cp data/src/html/bubble.html repo/docs/bubble/index.html
+        cd repo
+        git add .
+        
+        if git diff --cached --quiet; then
+          echo "NO CHANGES TO DEPLOY."
+        else
+          git commit -m "[labwons.machine] on $TIMESTAMP"
+          git push
+        fi
+
+    - name: Commit and Push changes
+      run : |
+        git add . -- :!repo/
+        
+        if git diff --cached --quiet; then
+          echo "NO CHANGES TO COMMIT"
+        else
+          git commit -m "[labwons.machine] on $TIMESTAMP"
+          git push
+        fi
+
+    

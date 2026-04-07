@@ -1,0 +1,39 @@
+{
+    "baseline": {
+        "date": "20260407 13:19",
+        "log": [
+            "baseline-20260311.parquet",
+            "baseline-20260312.parquet",
+            "baseline-20260313.parquet",
+            "baseline-20260316.parquet",
+            "baseline-20260317.parquet",
+            "baseline-20260318.parquet",
+            "baseline-20260319.parquet",
+            "baseline-20260320.parquet",
+            "baseline-20260323.parquet",
+            "baseline-20260324.parquet",
+            "baseline-20260325.parquet",
+            "baseline-20260326.parquet",
+            "baseline-20260327.parquet",
+            "baseline-20260330.parquet",
+            "baseline-20260331.parquet",
+            "baseline-20260401.parquet",
+            "baseline-20260402.parquet",
+            "baseline-20260403.parquet",
+            "baseline-20260406.parquet",
+            "baseline-20260407.parquet"
+        ]
+    },
+    "market": {
+        "date": "20260407 13:19"
+    },
+    "number": {
+        "date": "20260403"
+    },
+    "prices": {
+        "time": "20260407 13:19"
+    },
+    "sector": {
+        "date": "20260406"
+    }
+}
