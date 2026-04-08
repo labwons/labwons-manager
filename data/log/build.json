@@ -1,8 +1,7 @@
 {
     "baseline": {
-        "date": "20260407 15:30",
+        "date": "20260408 10:46",
         "log": [
-            "baseline-20260311.parquet",
             "baseline-20260312.parquet",
             "baseline-20260313.parquet",
             "baseline-20260316.parquet",
@@ -21,17 +20,18 @@
             "baseline-20260402.parquet",
             "baseline-20260403.parquet",
             "baseline-20260406.parquet",
-            "baseline-20260407.parquet"
+            "baseline-20260407.parquet",
+            "baseline-20260408.parquet"
         ]
     },
     "market": {
-        "date": "20260407 15:30"
+        "date": "20260408 10:46"
     },
     "number": {
         "date": "20260406"
     },
     "prices": {
-        "time": "20260407 15:30"
+        "time": "20260408 10:46"
     },
     "sector": {
         "date": "20260407"
