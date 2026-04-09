@@ -118,9 +118,9 @@ REITS:Dict[str, str] = {
     "415640": "KB발해인프라",
 }
 
-MARKET = 'https://github.com/labwons/pylabwons-archive/raw/refs/heads/main/data/src/market.parquet'
-SECTOR = 'https://github.com/labwons/pylabwons-archive/raw/refs/heads/main/data/src/sector.parquet'
-NUMBER = 'https://github.com/labwons/pylabwons-archive/raw/refs/heads/main/data/src/number.parquet'
+MARKET = 'https://github.com/labwons/labwons-manager/raw/refs/heads/main/data/src/market.parquet'
+SECTOR = 'https://github.com/labwons/labwons-manager/raw/refs/heads/main/data/src/sector.parquet'
+NUMBER = 'https://github.com/labwons/labwons-manager/raw/refs/heads/main/data/src/number.parquet'
 
 URL = DataDictionary(
     BASE='https://www.wiseindex.com/Index/Index#/G1010.0.Components',
