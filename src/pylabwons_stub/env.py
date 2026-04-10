@@ -54,6 +54,7 @@ class PATH:
     HTML = DataDictionary(
         BUBBLE=DATA / "src/html/bubble.html",
         MARKETMAP = DATA / "src/html/marketmap.html",
+        STOCK = DATA / "src/html/stock",
         TEMPLATE = DATA / "src/html/template",
     )
 

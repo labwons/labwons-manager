@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>{{ title }}</title>
+  
+  <!-- Favicons -->
+  <link href="/src/img/favicon.ico" rel="icon">
+    
+  <!-- Dependencies -->
+  <script src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/js/jquery-3.6.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/js/plotly-2.35.2-r0.1.min.js"></script>
+  <script src="https://raw.githubusercontent.com/labwons/labwons/refs/heads/main/docs/src/js/labwons-1.0.0.js" defer></script>
+
+  <!-- CSS Files -->
+  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/icon.min.css" rel="stylesheet"> 
+  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/apexcharts.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/style.min.css" rel="stylesheet">
+  
+  <script>
+	function openTab(evt, tabName) {
+	  // 1. 모든 tab-content 숨기기
+	  const tabContents = document.getElementsByClassName("tab-content");
+	  for (let i = 0; i < tabContents.length; i++) {
+		tabContents[i].classList.remove("active");
+	  }
+
+	  // 2. 모든 tab-btn에서 active 클래스 제거
+	  const tabBtns = document.getElementsByClassName("tab-btn");
+	  for (let i = 0; i < tabBtns.length; i++) {
+		tabBtns[i].classList.remove("active");
+	  }
+
+	  // 3. 클릭한 탭과 버튼만 active 클래스 추가
+	  document.getElementById(tabName).classList.add("active");
+	  evt.currentTarget.classList.add("active");
+	}
+
+  </script>
+  
+  <!-- Style Sheet -->
+  <style>
+	.tab-container {
+	  width: 400px;
+	  margin: 20px auto;
+	  border: 1px solid #ddd;
+	  border-radius: 8px;
+	  overflow: hidden;
+	}
+
+	/* 탭 버튼 스타일 */
+	.tab-menu {
+	  display: flex;
+	  background-color: #f1f1f1;
+	}
+
+	.tab-btn {
+	  flex: 1;
+	  padding: 12px;
+	  border: none;
+	  outline: none;
+	  cursor: pointer;
+	  transition: 0.3s;
+	  font-size: 16px;
+	}
+
+	.tab-btn:hover {
+	  background-color: #ddd;
+	}
+
+	.tab-btn.active {
+	  background-color: #fff;
+	  font-weight: bold;
+	  border-bottom: 2px solid #3498db;
+	}
+
+	/* 콘텐츠 스타일 */
+	.tab-content {
+	  display: none; /* 기본적으로 숨김 */
+	  padding: 20px;
+	  animation: fadeEffect 0.5s; /* 부드러운 전환 효과 */
+	}
+
+	.tab-content.active {
+	  display: block; /* 활성화 시 보임 */
+	}
+
+	@keyframes fadeEffect {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
+  </style>
+  
+  <!-- Data -->{% block data %}{% endblock %}
+</head>
+
+<body>
+  <header id="header" class="header">
+    <div class="container container-header">
+      <a href="/" class="logo d-flex align-items-center me-auto">
+        <img src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/img/logo-text.png" alt="">
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="https://labwons.com">시장 지도</a></li>
+          <li><a href="https://labwons.com/bubble">종목 분포</a></li>
+        </ul>
+        <i class="mobile-nav-toggle bi bi-list"></i>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="section">
+      <div class="container container-service">
+        <div class="content-main">
+			<div class="tab-container">
+			  <!-- 탭 버튼 -->
+			  <div class="tab-menu">
+				<button class="tab-btn active" onclick="openTab(event, 'tab1')">Tab 1</button>
+				<button class="tab-btn" onclick="openTab(event, 'tab2')">Tab 2</button>
+				<button class="tab-btn" onclick="openTab(event, 'tab3')">Tab 3</button>
+			  </div>
+
+			  <!-- 탭 콘텐츠 -->
+			  <div id="tab1" class="tab-content active">
+				<h3>콘텐츠 1</h3>
+				<p>첫 번째 탭의 내용입니다.</p>
+			  </div>
+			  <div id="tab2" class="tab-content">
+				<h3>콘텐츠 2</h3>
+				<p>두 번째 탭의 내용입니다.</p>
+			  </div>
+			  <div id="tab3" class="tab-content">
+				<h3>콘텐츠 3</h3>
+				<p>세 번째 탭의 내용입니다.</p>
+			  </div>
+			</div>
+        </div>
+      </div>
+    </section>
+
+    {% block content_addon %}{% endblock %}
+
+    <section class="section section-flow">
+
+      <div class="container container-title">
+        <h2 class="main-title">SERVICE</h2>
+        <p class="sub-title">다른 기능들도 확인해보세요!</p>
+      </div>
+
+      <div class="container container-content gap-24px">
+        
+        <div class="content-service color-cyan">
+          <i class="bi bi-columns-gap"></i>
+          <h3>시장 지도</h3>
+          <p>코스피200과 코스닥150 종목을 섹터/업종 별 시가총액과 투자지표를 각각 크기와 색깔로 표시하였습니다. 시장을 <strong>직관적</strong>으로 이해할 수 있습니다.</p>
+          <a href="/" class="goto-service"><span>바로가기</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="content-service color-orange">
+          <i class="bi bi-pin-map"></i>
+          <h3>종목 분포</h3>
+          <p>코스피와 코스닥 시가총액 중위값 이상의 약 1,300여개 종목을 2차원 산포도로 표시하였습니다. <strong>종목 발굴</strong>에 유용하게 사용할 수 있습니다.</p>
+          <a href="/bubble" class="goto-service"><span>바로가기</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+        
+        <div class="content-service color-teal">
+          <i class="bi bi-graph-up"></i>
+          <h3>경제 지표</h3>
+          <p>한국은행과 기타 경제 기관에서 제공하는 거시 경제 지표를 비교하며 볼 수 있습니다. 경제 흐름을 보며 <strong>리스크 관리</strong>를 할 수 있습니다.</p>
+          <a href="/macro" class="goto-service"><span>바로가기</span><i class="bi bi-arrow-right"></i></a>
+        </div>
+
+      </div>
+    
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="footer-basis container" style="background: white url(https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/img/footer-bg.png) no-repeat right top;">
+      <div class="footer-container">
+        <div class="footer-info">
+          <a href="/" class="logo">
+            <img src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/img/logo-footer.png" alt="LAB￦ONS">
+          </a>
+          <p>본 홈페이지는 <b>개인 블로그</b>이며 여기서 취득한 어떤 정보도 법적인 효력을 갖지 못합니다. 모든 투자의 책임은 당사자에게 있습니다. 참고한 정보의 출처는 신뢰할 만하나, 열람 시점이나 제공처의 사정 따라 정보의 정확성이 달라질 수 있습니다.</p>
+        </div>
+
+        <div class="footer-links">
+          <div class="footer-link">
+            <h4>주요 정보 출처</h4>
+            <ul>
+              <li><i class="bi bi-chevron-right"></i> <a href="http://data.krx.co.kr/contents/MDC/MAIN/main/index.cmd">한국거래소</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="https://dart.fss.or.kr/">전자공시시스템</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="https://finance.naver.com/">네이버증권</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="https://comp.fnguide.com/SVO2/ASP/SVD_main.asp?pGB=1&gicode=A{{ ticker }}&cID=&MenuYn=Y&ReportGB=&NewMenuID=11&stkGb=&strResearchYN=">에프앤가이드</a></li>
+              <li><i class="bi bi-chevron-right"></i> <a href="https://news.einfomax.co.kr/">연합인포맥스</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-link">
+            <h4>서비스 바로가기</h4>
+            <ul>
+              <li><i class="bi bi-chevron-right"></i><a href="https://labwons.com">시장 지도</a></li>
+			  <li><i class="bi bi-chevron-right"></i><a href="https://labwons.com/bubble">종목 분포</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-contact">
+          <h4>연락처</h4>
+          <p><strong><i class="bi bi-envelope-fill"></i></strong> snob.labwons@gmail.com </p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="copyright">
+        &copy; Copyright LAB<strong>￦</strong>ONS. All Rights Reserved
+      </div>
+      <div class="credits">Designed By. YUHO PAPA</div>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top"><i class="bi bi-arrow-up-short"></i></a>
+
+</body>
+</html>
+
