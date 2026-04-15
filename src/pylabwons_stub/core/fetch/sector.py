@@ -72,12 +72,6 @@ class Sector(DataFrameHeir):
         return self._fetch_date()
 
     @staticmethod
-    def _fetch_date() -> str:
-        return re.compile(r"var\s+dt\s*=\s*'(\d{8})'") \
-            .search(requests.get(SCHEMA.URL.BASE).text) \
-            .group(1)
-
-    @staticmethod
     def _fetch_group(code: str, date: str = "", countdown: int = 5, logger: Callable=print) -> DataFrame:
         try:
             resp = requests.get(SCHEMA.URL.SECTOR(date, code))
@@ -97,6 +91,16 @@ class Sector(DataFrameHeir):
             return DataFrame()
         logger(f'OK')
         return DataFrame(resp.json()['list'])
+
+    def _fetch_date(self) -> str:
+        try:
+            return re.compile(r"var\s+dt\s*=\s*'(\d{8})'") \
+                   .search(requests.get(SCHEMA.URL.BASE).text) \
+                   .group(1)
+        except (requests.exceptions.ConnectionError,
+                requests.exceptions.ConnectTimeout,
+                Exception):
+            return self.date
 
 
 if __name__ == "__main__":
