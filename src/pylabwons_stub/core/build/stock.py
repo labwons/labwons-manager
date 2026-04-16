@@ -40,5 +40,5 @@ class Stock(Ticker):
 
 if __name__ == "__main__":
 
-    stock = Stock('005930')
+    stock = Stock('000660')
     stock.release()

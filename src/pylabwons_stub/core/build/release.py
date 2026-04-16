@@ -1,3 +1,5 @@
+import pandas as pd
+
 from pylabwons_stub.core.build.baseline import Baseline
 from pylabwons_stub.schema.const.baseline import BASELINE
 from pylabwons_stub.schema.const.release import COMMENT, STYLE
@@ -18,6 +20,7 @@ class Release(Baseline):
         copy = self.copy()
         copy['name'] = copy[['name', 'market']] \
                        .apply(lambda r: f'{r[0]}*' if r[1] == 'kosdaq' else r[0], axis=1, raw=True)
+        copy = copy.drop(index=copy[copy['market'].isna()].index)
         copy.marketCap = (copy.marketCap / 1e+8).astype(int)
         copy.ifrsType = copy.ifrsType.apply(lambda x: "연결" if x == "D" else "별도")
         copy.fiscalMonth = copy.fiscalMonth.apply(lambda x: str(x).replace("(P)", ", 잠정"))
@@ -171,8 +174,8 @@ if __name__ == "__main__":
 
     logger = lw.Logger()
     release = Release(logger=logger)
-    release.build()
-    print(release.build_note)
+    # release.build()
+    # print(release.build_note)
     # print(release.schema)
     # print(release.note)
-    # release.as_excel()
+    release.as_excel()
