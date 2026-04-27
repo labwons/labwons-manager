@@ -193,7 +193,29 @@ if __name__ == "__main__":
     # print(baseline.market.date)
     # print(baseline)
     # print(baseline.columns)
-    baseline.build('baseline')
+    # baseline.build('baseline')
     # baseline.market.to_excel(PATH.DOWNLOADS / 'market.xlsx')
     # baseline.number.to_excel(PATH.DOWNLOADS / 'number.xlsx')
     # baseline.sector.to_excel(PATH.DOWNLOADS / 'sector.xlsx')
+    print(baseline)
+
+    sort = baseline[(pd.to_numeric(baseline['estimatedEpsGrowth'], errors='coerce') >= 100) |
+                    (baseline['estimatedEpsGrowth'].astype(str) == '흑자전환')]
+    print(sort)
+
+    sort = sort[sort['trailingPe'] >= sort['forwardPe']]
+    print(sort)
+
+    sort = sort[sort['fiscalDebtRatio'] <= 150]
+    print(sort)
+
+    sort = sort[sort['forwardPe'] <= sort['industryPe']]
+    print(sort)
+
+    sort = sort[sort['returnOn6Months'] < sort['returnOn1Year']]
+    print(sort)
+
+    # for n, df in sort.groupby('industryName'):
+    #     print(n, '-' * 50)
+    #     # print(df)
+    #     print(df.describe())

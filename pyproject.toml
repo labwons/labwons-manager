@@ -7,6 +7,7 @@ name = "pylabwons_stub"
 version = "0.1.0"
 dependencies = [
     "jinja2",
+    "lightweight-charts",
     "numpy",
     "pandas",
     "plotly",
