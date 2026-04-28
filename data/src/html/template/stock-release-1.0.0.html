@@ -239,6 +239,59 @@
 	  margin-right: 8px;
 	  cursor: pointer;
 	}
+
+	.panes-container {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 12px;
+	}
+
+	.pane {
+	  flex: 0 0 150px;
+	  border: 1px solid #ddd;
+	  border-radius: 4px;
+	  background: #fff;
+	  position: relative;
+	  overflow: hidden;
+	}
+
+	.pane-header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  padding: 8px 12px;
+	  background-color: #f5f5f5;
+	  border-bottom: 1px solid #ddd;
+	  font-size: 13px;
+	  font-weight: 600;
+	  color: #333;
+	}
+
+	.pane-close-btn {
+	  background: none;
+	  border: none;
+	  color: #999;
+	  cursor: pointer;
+	  font-size: 16px;
+	  padding: 0;
+	  width: 24px;
+	  height: 24px;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+
+	.pane-close-btn:hover {
+	  color: #333;
+	  background-color: #e0e0e0;
+	  border-radius: 4px;
+	}
+
+	.pane-content {
+	  width: 100%;
+	  height: 100%;
+	  min-height: 130px;
+	}
   </style>
 
 </head>
@@ -279,21 +332,47 @@
               <div id="chart-container" class="chart-container"></div>
             </div>
 
+            <!-- Panes Container -->
+            <div id="panes-container" class="panes-container"></div>
+
             <!-- Navigation Section -->
             <div class="navigation-section">
             <ul class="nav-list">
               <li>
-              <label>
-                <input type="checkbox" id="opt-ma" data-option="ma" />
-                Moving Average
-              </label>
+                <div class="dropdown">
+                  <button class="dropdown-btn dropdown-btn-ma">
+                    Moving Average
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <div class="dropdown-content" id="ma-dropdown">
+                    <label>
+                      <input type="checkbox" id="opt-ma-all" data-option="ma" data-ma="all" />
+                      All
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-ma-5" data-option="ma" data-ma="ma5" />
+                      MA 5
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-ma-20" data-option="ma" data-ma="ma20" />
+                      MA 20
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-ma-60" data-option="ma" data-ma="ma60" />
+                      MA 60
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-ma-120" data-option="ma" data-ma="ma120" />
+                      MA 120
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-ma-200" data-option="ma" data-ma="ma200" />
+                      MA 200
+                    </label>
+                  </div>
+                </div>
               </li>
-              <li>
-              <label>
-                <input type="checkbox" id="opt-bb" data-option="bb" />
-                Bollinger Band
-              </label>
-              </li>
+
               <li>
                 <div class="dropdown">
                   <button class="dropdown-btn">
@@ -324,23 +403,55 @@
                   </div>
                 </div>
               </li>
+
               <li>
-              <label>
-                <input type="checkbox" id="opt-rsi" data-option="rsi" />
-                RSI
-              </label>
+                <div class="dropdown">
+                  <button class="dropdown-btn dropdown-btn-bb">
+                    Bollinger Band
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <div class="dropdown-content" id="bb-dropdown">
+                    <label>
+                      <input type="checkbox" id="opt-bb-all" data-option="bb" data-bb="all" />
+                      All
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-bb-2x" data-option="bb" data-bb="2x" />
+                      2x Band
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-bb-1x" data-option="bb" data-bb="1x" />
+                      1x Band
+                    </label>
+                  </div>
+                </div>
               </li>
+              
               <li>
-              <label>
-                <input type="checkbox" id="opt-macd" data-option="macd" />
-                MACD
-              </label>
-              </li>
-              <li>
-              <label>
-                <input type="checkbox" id="opt-volume" data-option="volume" />
-                Volume
-              </label>
+                <div class="dropdown">
+                  <button class="dropdown-btn dropdown-btn-indicators">
+                    Indicators
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <div class="dropdown-content" id="indicators-dropdown">
+                    <label>
+                      <input type="checkbox" id="opt-rsi" data-indicator="rsi" />
+                      RSI
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-atr" data-indicator="atr" />
+                      ATR
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-volume" data-indicator="volume" />
+                      Volume
+                    </label>
+                    <label>
+                      <input type="checkbox" id="opt-macd" data-indicator="macd" />
+                      MACD
+                    </label>
+                  </div>
+                </div>
               </li>
             </ul>
             </div>
@@ -448,7 +559,9 @@
 
 </body>
 <script>
-
+  /* ======================================================================
+    CHART RENDERING: OHLC
+  ====================================================================== */
   function drawOhlc(selector, data) {
     const option = {
       chart: {
@@ -517,99 +630,239 @@
     return chart;
   }
 
-  function drawMA(chart, maData) {
-    const maConfigs = [
-      { key: 'ma5', color: '#FF9800', lineWidth: 1 },
-      { key: 'ma20', color: '#2196F3', lineWidth: 1 },
-      { key: 'ma60', color: '#4CAF50', lineWidth: 1 },
-      { key: 'ma120', color: '#9C27B0', lineWidth: 1 },
-      { key: 'ma200', color: '#F44336', lineWidth: 2 }
-    ];
 
-    const maSeriesArray = [];
-    maConfigs.forEach(config => {
-      if (maData[config.key]) {
+  /* ======================================================================
+    CHART RENDERING: MA
+  ====================================================================== */
+  function drawMA(chart, maData, maKey) {
+    const maConfigs = {
+      'ma5': { color: '#FF9800', lineWidth: 1 },
+      'ma20': { color: '#2196F3', lineWidth: 1 },
+      'ma60': { color: '#4CAF50', lineWidth: 1 },
+      'ma120': { color: '#9C27B0', lineWidth: 1 },
+      'ma200': { color: '#F44336', lineWidth: 2 }
+    };
+
+    if (!window.chartMA) {
+      window.chartMA = {};
+    }
+
+    // If maKey is provided, draw only that specific MA
+    if (maKey && maKey !== 'all') {
+      if (maData[maKey] && !window.chartMA[maKey]) {
+        const config = maConfigs[maKey];
         const maSeries = chart.addSeries(LightweightCharts.LineSeries, {
           color: config.color,
           lineWidth: config.lineWidth,
-          lineStyle: LightweightCharts.LineStyle.Solid
+          lineStyle: LightweightCharts.LineStyle.Solid,
         });
 
         const maLineData = [];
         for (let i = 0; i < maData.date.length; i++) {
-          if (maData[config.key][i] !== null && maData[config.key][i] !== undefined) {
+          if (maData[maKey][i] !== null && maData[maKey][i] !== undefined) {
             maLineData.push({
               time: maData.date[i],
-              value: maData[config.key][i]
+              value: maData[maKey][i]
             });
           }
         }
         maSeries.setData(maLineData);
-        maSeriesArray.push(maSeries);
-      }
-    });
-
-    window.chartMA = maSeriesArray;
-  }
-
-  function removeMA(chart) {
-    if (window.chartMA && window.chartMA.length > 0) {
-      window.chartMA.forEach(series => {
-        chart.removeSeries(series);
-      });
-      window.chartMA = [];
-    }
-  }
-
-  function drawBB(chart, bbData) {
-    const bbConfigs = [
-      { key: 'bb_upper', color: '#FF6B6B', lineWidth: 1 },
-      { key: 'bb_middle', color: '#FF1744', lineWidth: 2 },
-      { key: 'bb_lower', color: '#FF6B6B', lineWidth: 1 }
-    ];
-
-    const bbSeriesArray = [];
-    bbConfigs.forEach(config => {
-      if (bbData[config.key]) {
-        const bbSeries = chart.addSeries(LightweightCharts.LineSeries, {
-          color: config.color,
-          lineWidth: config.lineWidth,
-          lineStyle: LightweightCharts.LineStyle.Solid
+        maSeries.applyOptions({
+          priceLineVisible: false,
         });
-
-        const bbLineData = [];
-        for (let i = 0; i < bbData.date.length; i++) {
-          if (bbData[config.key][i] !== null && bbData[config.key][i] !== undefined) {
-            bbLineData.push({
-              time: bbData.date[i],
-              value: bbData[config.key][i]
-            });
-          }
-        }
-        bbSeries.setData(bbLineData);
-        bbSeriesArray.push(bbSeries);
+        window.chartMA[maKey] = maSeries;
       }
-    });
+    } else if (maKey === 'all') {
+      // Draw all MA lines
+      Object.keys(maConfigs).forEach(key => {
+        if (maData[key] && !window.chartMA[key]) {
+          const config = maConfigs[key];
+          const maSeries = chart.addSeries(LightweightCharts.LineSeries, {
+            color: config.color,
+            lineWidth: config.lineWidth,
+            lineStyle: LightweightCharts.LineStyle.Solid,
+          });
 
-    window.chartBB = bbSeriesArray;
-  }
-
-  function removeBB(chart) {
-    if (window.chartBB && window.chartBB.length > 0) {
-      window.chartBB.forEach(series => {
-        chart.removeSeries(series);
+          const maLineData = [];
+          for (let i = 0; i < maData.date.length; i++) {
+            if (maData[key][i] !== null && maData[key][i] !== undefined) {
+              maLineData.push({
+                time: maData.date[i],
+                value: maData[key][i]
+              });
+            }
+          }
+          maSeries.setData(maLineData);
+          maSeries.applyOptions({
+            priceLineVisible: false,
+          });
+          window.chartMA[key] = maSeries;
+        }
       });
-      window.chartBB = [];
     }
   }
 
+  function removeMA(chart, maKey) {
+    if (!window.chartMA) {
+      window.chartMA = {};
+      return;
+    }
+
+    if (maKey && maKey !== 'all') {
+      // Remove specific MA
+      if (window.chartMA[maKey]) {
+        chart.removeSeries(window.chartMA[maKey]);
+        delete window.chartMA[maKey];
+      }
+    } else if (maKey === 'all') {
+      // Remove all MA lines
+      Object.keys(window.chartMA).forEach(key => {
+        chart.removeSeries(window.chartMA[key]);
+      });
+      window.chartMA = {};
+    }
+  }
+
+  /* ======================================================================
+    CHART RENDERING: Bollinger Bands
+  ====================================================================== */
+  function drawBB(chart, bbData, bbKey) {
+    const bbConfigs = {
+      'bb_upper': { color: '#FF6B6B', lineWidth: 1, type: '2x' },
+      'bb_lower': { color: '#FF6B6B', lineWidth: 1, type: '2x' },
+      'bb_upper_trend': { color: '#FFB3B3', lineWidth: 1, type: '1x' },
+      'bb_lower_trend': { color: '#FFB3B3', lineWidth: 1, type: '1x' }
+    };
+
+    if (!window.chartBB) {
+      window.chartBB = {};
+    }
+
+    if (bbKey === 'all') {
+      // Draw all bands
+      Object.keys(bbConfigs).forEach(key => {
+        if (bbData[key] && !window.chartBB[key]) {
+          const config = bbConfigs[key];
+          const bbSeries = chart.addSeries(LightweightCharts.LineSeries, {
+            color: config.color,
+            lineWidth: config.lineWidth,
+            lineStyle: LightweightCharts.LineStyle.Solid,
+          });
+
+          const bbLineData = [];
+          for (let i = 0; i < bbData.date.length; i++) {
+            if (bbData[key][i] !== null && bbData[key][i] !== undefined) {
+              bbLineData.push({
+                time: bbData.date[i],
+                value: bbData[key][i]
+              });
+            }
+          }
+          bbSeries.setData(bbLineData);
+          bbSeries.applyOptions({
+            priceLineVisible: false,
+          });
+          window.chartBB[key] = bbSeries;
+        }
+      });
+    } else if (bbKey === '2x') {
+      // Draw 2x bands
+      ['bb_upper', 'bb_lower'].forEach(key => {
+        if (bbData[key] && !window.chartBB[key]) {
+          const config = bbConfigs[key];
+          const bbSeries = chart.addSeries(LightweightCharts.LineSeries, {
+            color: config.color,
+            lineWidth: config.lineWidth,
+            lineStyle: LightweightCharts.LineStyle.Solid,
+          });
+
+          const bbLineData = [];
+          for (let i = 0; i < bbData.date.length; i++) {
+            if (bbData[key][i] !== null && bbData[key][i] !== undefined) {
+              bbLineData.push({
+                time: bbData.date[i],
+                value: bbData[key][i]
+              });
+            }
+          }
+          bbSeries.setData(bbLineData);
+          bbSeries.applyOptions({
+            priceLineVisible: false,
+          });
+          window.chartBB[key] = bbSeries;
+        }
+      });
+    } else if (bbKey === '1x') {
+      // Draw 1x bands
+      ['bb_upper_trend', 'bb_lower_trend'].forEach(key => {
+        if (bbData[key] && !window.chartBB[key]) {
+          const config = bbConfigs[key];
+          const bbSeries = chart.addSeries(LightweightCharts.LineSeries, {
+            color: config.color,
+            lineWidth: config.lineWidth,
+            lineStyle: LightweightCharts.LineStyle.Solid,
+          });
+
+          const bbLineData = [];
+          for (let i = 0; i < bbData.date.length; i++) {
+            if (bbData[key][i] !== null && bbData[key][i] !== undefined) {
+              bbLineData.push({
+                time: bbData.date[i],
+                value: bbData[key][i]
+              });
+            }
+          }
+          bbSeries.setData(bbLineData);
+          bbSeries.applyOptions({
+            priceLineVisible: false,
+          });
+          window.chartBB[key] = bbSeries;
+        }
+      });
+    }
+  }
+
+  function removeBB(chart, bbKey) {
+    if (!window.chartBB) {
+      window.chartBB = {};
+      return;
+    }
+
+    if (bbKey === 'all') {
+      // Remove all bands
+      Object.keys(window.chartBB).forEach(key => {
+        chart.removeSeries(window.chartBB[key]);
+      });
+      window.chartBB = {};
+    } else if (bbKey === '2x') {
+      // Remove 2x bands
+      ['bb_upper', 'bb_lower'].forEach(key => {
+        if (window.chartBB[key]) {
+          chart.removeSeries(window.chartBB[key]);
+          delete window.chartBB[key];
+        }
+      });
+    } else if (bbKey === '1x') {
+      // Remove 1x bands
+      ['bb_upper_trend', 'bb_lower_trend'].forEach(key => {
+        if (window.chartBB[key]) {
+          chart.removeSeries(window.chartBB[key]);
+          delete window.chartBB[key];
+        }
+      });
+    }
+  }
+
+  /* ======================================================================
+    CHART RENDERING: TREND
+  ====================================================================== */
   function drawTrend(chart, trendData, trendKey) {
     const trendConfigs = {
-      'trend_5y': { color: '#1565C0', lineWidth: 2 },
-      'trend_2y': { color: '#F57C00', lineWidth: 2 },
-      'trend_1y': { color: '#00796B', lineWidth: 2 },
-      'trend_6m': { color: '#6A1B9A', lineWidth: 2 },
-      'trend_3m': { color: '#C62828', lineWidth: 2 }
+      'trend_5y': { color: '#1565C0', bandColor: 'rgba(21, 101, 192, 0.1)' },
+      'trend_2y': { color: '#F57C00', bandColor: 'rgba(245, 124, 0, 0.1)' },
+      'trend_1y': { color: '#00796B', bandColor: 'rgba(0, 121, 107, 0.1)' },
+      'trend_6m': { color: '#6A1B9A', bandColor: 'rgba(106, 27, 154, 0.1)' },
+      'trend_3m': { color: '#C62828', bandColor: 'rgba(198, 40, 40, 0.1)' }
     };
 
     if (!window.chartTrend) {
@@ -618,32 +871,170 @@
 
     if (trendData[trendKey] && !window.chartTrend[trendKey]) {
       const config = trendConfigs[trendKey];
-      const trendSeries = chart.addSeries(LightweightCharts.LineSeries, {
+      const devKey = trendKey + '_dev';
+
+      // Create upper band series
+      const upperBandSeries = chart.addSeries(LightweightCharts.LineSeries, {
         color: config.color,
-        lineWidth: config.lineWidth,
-        lineStyle: LightweightCharts.LineStyle.Dashed
+        lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dotted,
       });
 
-      const trendLineData = [];
+      // Create lower band series
+      const lowerBandSeries = chart.addSeries(LightweightCharts.LineSeries, {
+        color: config.color,
+        lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dotted,
+      });
+
+      // Create center trend line series
+      const centerTrendSeries = chart.addSeries(LightweightCharts.LineSeries, {
+        color: config.color,
+        lineWidth: 2,
+        lineStyle: LightweightCharts.LineStyle.Dashed,
+      });
+
+      // Prepare band data
+      const upperBandData = [];
+      const lowerBandData = [];
+      const centerTrendData = [];
+
       for (let i = 0; i < trendData.date.length; i++) {
-        if (trendData[trendKey][i] !== null && trendData[trendKey][i] !== undefined) {
-          trendLineData.push({
-            time: trendData.date[i],
-            value: trendData[trendKey][i]
+        const trendValue = trendData[trendKey][i];
+        const devValue = trendData[devKey];
+
+        if (trendValue !== null && trendValue !== undefined) {
+          const time = trendData.date[i];
+          centerTrendData.push({
+            time: time,
+            value: trendValue
+          });
+
+          upperBandData.push({
+            time: time,
+            value: trendValue + (devValue || 0)
+          });
+
+          lowerBandData.push({
+            time: time,
+            value: trendValue - (devValue || 0)
           });
         }
       }
-      trendSeries.setData(trendLineData);
-      window.chartTrend[trendKey] = trendSeries;
+
+      upperBandSeries.setData(upperBandData);
+      lowerBandSeries.setData(lowerBandData);
+      centerTrendSeries.setData(centerTrendData);
+
+      upperBandSeries.applyOptions({
+        priceLineVisible: false,
+      });
+      lowerBandSeries.applyOptions({
+        priceLineVisible: false,
+      });
+      centerTrendSeries.applyOptions({
+        priceLineVisible: false,
+      });
+
+      window.chartTrend[trendKey] = {
+        center: centerTrendSeries,
+        upper: upperBandSeries,
+        lower: lowerBandSeries
+      };
     }
   }
 
   function removeTrend(chart, trendKey) {
     if (window.chartTrend && window.chartTrend[trendKey]) {
-      chart.removeSeries(window.chartTrend[trendKey]);
+      const trendSeries = window.chartTrend[trendKey];
+      chart.removeSeries(trendSeries.center);
+      chart.removeSeries(trendSeries.upper);
+      chart.removeSeries(trendSeries.lower);
       delete window.chartTrend[trendKey];
     }
   }
+
+  function drawVolume(chart, volumeData) {
+
+    if (!window.chartVolume) {
+      window.chartVolume = {};
+    }
+
+    // const option = {
+    //   chart: {
+    //     width: paneElement.clientWidth,
+    //     height: paneElement.clientHeight,
+    //     layout: {
+    //       background: { color: '#fff' },
+    //       textColor: '#000',
+    //     },
+    //     rightPriceScale: {
+    //       mode: LightweightCharts.PriceScaleMode.Normal,
+    //       autoScale: true,
+    //     },
+    //     timeScale: {
+    //       timeVisible: false,
+    //       secondsVisible: false,
+    //     }
+    //   }
+    // };
+
+    // const paneChart = LightweightCharts.createChart(paneElement, option.chart);
+    const volumeSeries = chart.addSeries(LightweightCharts.HistogramSeries, {
+      color: '#787b86CC',
+      // pane: 1,
+      priceFormat: {
+        type: 'volume',
+      },
+      priceScaleId: 'volume-scale',
+      scaleMargins: {
+        top: 0.9, // highest point of the series will be 70% away from the top
+        bottom: 0,
+      },
+    });
+
+    const volumeLineData = [];
+    for (let i = 0; i < volumeData.date.length; i++) {
+      if (volumeData.volume && volumeData.volume[i] !== null && volumeData.volume[i] !== undefined) {
+        volumeLineData.push({
+          time: volumeData.date[i],
+          value: volumeData.volume[i],
+        });
+      }
+    }
+
+    volumeSeries.setData(volumeLineData);
+    volumeSeries.applyOptions({
+        priceLineVisible: false,
+    });
+    volumeSeries.priceScale().applyOptions({
+      scaleMargins: {
+        top: 0.9, // highest point of the series will be 70% away from the top
+        bottom: 0,
+      },
+    });
+
+    window.chartVolume = volumeSeries;
+    
+  }
+
+  function removeVolume(chart) {
+    if (window.chartVolume) {
+      chart.removeSeries(window.chartVolume);
+      delete window.chartVolume;
+    }
+  }
+
+  function removeTrend(chart, trendKey) {
+    if (window.chartTrend && window.chartTrend[trendKey]) {
+      const trendSeries = window.chartTrend[trendKey];
+      chart.removeSeries(trendSeries.center);
+      chart.removeSeries(trendSeries.upper);
+      chart.removeSeries(trendSeries.lower);
+      delete window.chartTrend[trendKey];
+    }
+  }
+
 
   const data = new Array(raw.ohlcv.date.length);
   for (let i = 0; i < raw.ohlcv.date.length; i++) {
@@ -660,71 +1051,426 @@
   // Helper function to position dropdown relative to button
   let lastDropdownUpdate = 0;
   const dropdownUpdateThrottle = 16; // ~60fps throttle
-  const dropdownBtn = document.querySelector('.dropdown-btn');
+  const trendDropdownBtn = document.querySelector('.dropdown-btn:not(.dropdown-btn-ma):not(.dropdown-btn-bb)');
   const trendDropdown = document.getElementById('trend-dropdown');
+  const maDropdownBtn = document.querySelector('.dropdown-btn-ma');
+  const maDropdown = document.getElementById('ma-dropdown');
+  const bbDropdownBtn = document.querySelector('.dropdown-btn-bb');
+  const bbDropdown = document.getElementById('bb-dropdown');
   
-  if (!dropdownBtn || !trendDropdown) {
-    console.warn('Trend dropdown elements not found');
-  } else {
-    function positionDropdown() {
-      const rect = dropdownBtn.getBoundingClientRect();
+  function positionTrendDropdown() {
+    if (trendDropdownBtn && trendDropdown) {
+      const rect = trendDropdownBtn.getBoundingClientRect();
       trendDropdown.style.top = (rect.bottom + 4) + 'px';
       trendDropdown.style.left = rect.left + 'px';
     }
+  }
 
-    function throttledDropdownUpdate() {
-      const now = Date.now();
-      if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
-        positionDropdown();
-        lastDropdownUpdate = now;
-      }
+  function positionMADropdown() {
+    if (maDropdownBtn && maDropdown) {
+      const rect = maDropdownBtn.getBoundingClientRect();
+      maDropdown.style.top = (rect.bottom + 4) + 'px';
+      maDropdown.style.left = rect.left + 'px';
     }
+  }
 
-    // Dropdown toggle for Trend Lines
-    dropdownBtn.addEventListener('click', function() {
+  function positionBBDropdown() {
+    if (bbDropdownBtn && bbDropdown) {
+      const rect = bbDropdownBtn.getBoundingClientRect();
+      bbDropdown.style.top = (rect.bottom + 4) + 'px';
+      bbDropdown.style.left = rect.left + 'px';
+    }
+  }
+
+  function throttledDropdownUpdate() {
+    const now = Date.now();
+    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
+      positionTrendDropdown();
+      positionMADropdown();
+      positionBBDropdown();
+      lastDropdownUpdate = now;
+    }
+  }
+
+  if (trendDropdownBtn && trendDropdown) {
+    trendDropdownBtn.addEventListener('click', function() {
       const isActive = trendDropdown.classList.toggle('active');
+      if (maDropdown) {
+        maDropdown.classList.remove('active');
+      }
+      if (bbDropdown) {
+        bbDropdown.classList.remove('active');
+      }
       if (isActive) {
         lastDropdownUpdate = 0;
-        positionDropdown();
-      }
-    });
-
-    // Update dropdown position on scroll with throttle
-    document.addEventListener('scroll', throttledDropdownUpdate, true);
-
-    // Update dropdown position on window resize with throttle
-    window.addEventListener('resize', throttledDropdownUpdate);
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const dropdown = document.querySelector('.dropdown');
-      if (dropdown && !dropdown.contains(event.target)) {
-        trendDropdown.classList.remove('active');
+        positionTrendDropdown();
       }
     });
   }
 
-  // Navigation option handlers
+  if (maDropdownBtn && maDropdown) {
+    maDropdownBtn.addEventListener('click', function() {
+      const isActive = maDropdown.classList.toggle('active');
+      if (trendDropdown) {
+        trendDropdown.classList.remove('active');
+      }
+      if (bbDropdown) {
+        bbDropdown.classList.remove('active');
+      }
+      if (isActive) {
+        lastDropdownUpdate = 0;
+        positionMADropdown();
+      }
+    });
+  }
+
+  if (bbDropdownBtn && bbDropdown) {
+    bbDropdownBtn.addEventListener('click', function() {
+      const isActive = bbDropdown.classList.toggle('active');
+      if (trendDropdown) {
+        trendDropdown.classList.remove('active');
+      }
+      if (maDropdown) {
+        maDropdown.classList.remove('active');
+      }
+      if (isActive) {
+        lastDropdownUpdate = 0;
+        positionBBDropdown();
+      }
+    });
+  }
+
+  // Update dropdown position on scroll with throttle
+  document.addEventListener('scroll', throttledDropdownUpdate, true);
+
+  // Update dropdown position on window resize with throttle
+  window.addEventListener('resize', throttledDropdownUpdate);
+
+  // ======================================================================
+  // INDICATORS & PANES SYSTEM
+  // ======================================================================
+
+  const indicatorsDropdownBtn = document.querySelector('.dropdown-btn-indicators');
+  const indicatorsDropdown = document.getElementById('indicators-dropdown');
+  const panesContainer = document.getElementById('panes-container');
+
+  const MAX_PANES = 4;
+  let activePanes = {}; // { 'rsi': chartInstance, 'atr': chartInstance, ... }
+
+  function positionIndicatorsDropdown() {
+    if (indicatorsDropdownBtn && indicatorsDropdown) {
+      const rect = indicatorsDropdownBtn.getBoundingClientRect();
+      indicatorsDropdown.style.top = (rect.bottom + 4) + 'px';
+      indicatorsDropdown.style.left = rect.left + 'px';
+    }
+  }
+
+  // Indicators dropdown handler
+  if (indicatorsDropdownBtn && indicatorsDropdown) {
+    indicatorsDropdownBtn.addEventListener('click', function() {
+      const isActive = indicatorsDropdown.classList.toggle('active');
+      if (trendDropdown) trendDropdown.classList.remove('active');
+      if (maDropdown) maDropdown.classList.remove('active');
+      if (bbDropdown) bbDropdown.classList.remove('active');
+      if (isActive) {
+        lastDropdownUpdate = 0;
+        positionIndicatorsDropdown();
+      }
+    });
+  }
+
+  // Pane drawing functions
+  // function drawRSI(paneElement, rsiData) {
+  //   const option = {
+  //     chart: {
+  //       width: paneElement.clientWidth,
+  //       height: paneElement.clientHeight,
+  //       layout: {
+  //         background: { color: '#fff' },
+  //         textColor: '#000',
+  //       },
+  //       rightPriceScale: {
+  //         mode: LightweightCharts.PriceScaleMode.Normal,
+  //         autoScale: true,
+  //       },
+  //       timeScale: {
+  //         timeVisible: false,
+  //         secondsVisible: false,
+  //       }
+  //     }
+  //   };
+
+  //   const paneChart = LightweightCharts.createChart(paneElement, option.chart);
+  //   const rsiSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
+  //     color: '#2196F3',
+  //   });
+
+  //   const rsiLineData = [];
+  //   for (let i = 0; i < rsiData.date.length; i++) {
+  //     if (rsiData.rsi && rsiData.rsi[i] !== null && rsiData.rsi[i] !== undefined) {
+  //       rsiLineData.push({
+  //         time: rsiData.date[i],
+  //         value: rsiData.rsi[i],
+  //       });
+  //     }
+  //   }
+
+  //   rsiSeries.setData(rsiLineData);
+  //   window.addEventListener('resize', () => {
+  //     paneChart.applyOptions({ width: paneElement.clientWidth });
+  //   });
+  //   return paneChart;
+  // }
+
+  // function drawATR(paneElement, atrData) {
+  //   const option = {
+  //     chart: {
+  //       width: paneElement.clientWidth,
+  //       height: paneElement.clientHeight,
+  //       layout: {
+  //         background: { color: '#fff' },
+  //         textColor: '#000',
+  //       },
+  //       rightPriceScale: {
+  //         mode: LightweightCharts.PriceScaleMode.Normal,
+  //         autoScale: true,
+  //       },
+  //       timeScale: {
+  //         timeVisible: false,
+  //         secondsVisible: false,
+  //       }
+  //     }
+  //   };
+
+  //   const paneChart = LightweightCharts.createChart(paneElement, option.chart);
+  //   const atrSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
+  //     color: '#FF9800',
+  //   });
+
+  //   const atrLineData = [];
+  //   for (let i = 0; i < atrData.date.length; i++) {
+  //     if (atrData.atr && atrData.atr[i] !== null && atrData.atr[i] !== undefined) {
+  //       atrLineData.push({
+  //         time: atrData.date[i],
+  //         value: atrData.atr[i],
+  //       });
+  //     }
+  //   }
+
+  //   atrSeries.setData(atrLineData);
+  //   window.addEventListener('resize', () => {
+  //     paneChart.applyOptions({ width: paneElement.clientWidth });
+  //   });
+  //   return paneChart;
+  // }
+
+  
+
+  function drawMACD(paneElement, macdData) {
+    const option = {
+      chart: {
+        width: paneElement.clientWidth,
+        height: paneElement.clientHeight,
+        layout: {
+          background: { color: '#fff' },
+          textColor: '#000',
+        },
+        rightPriceScale: {
+          mode: LightweightCharts.PriceScaleMode.Normal,
+          autoScale: true,
+        },
+        timeScale: {
+          timeVisible: false,
+          secondsVisible: false,
+        }
+      }
+    };
+
+    const paneChart = LightweightCharts.createChart(paneElement, option.chart);
+
+    // MACD line
+    const macdSeries = paneChart.addSeries(LightweightCharts.LineSeries, {
+      color: '#2196F3',
+      lineWidth: 2,
+    });
+
+    // Signal line
+    const signalSeries = paneChart.addSeries(LightweightCharts.LineSeries, {
+      color: '#FF9800',
+      lineWidth: 2,
+    });
+
+    // Histogram
+    const histogramSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
+      color: '#9C27B0',
+    });
+
+    const macdLineData = [];
+    const signalLineData = [];
+    const histogramData = [];
+
+    for (let i = 0; i < macdData.date.length; i++) {
+      if (macdData.macd && macdData.macd[i] !== null && macdData.macd[i] !== undefined) {
+        macdLineData.push({
+          time: macdData.date[i],
+          value: macdData.macd[i],
+        });
+      }
+      if (macdData.signal && macdData.signal[i] !== null && macdData.signal[i] !== undefined) {
+        signalLineData.push({
+          time: macdData.date[i],
+          value: macdData.signal[i],
+        });
+      }
+      if (macdData.histogram && macdData.histogram[i] !== null && macdData.histogram[i] !== undefined) {
+        histogramData.push({
+          time: macdData.date[i],
+          value: macdData.histogram[i],
+        });
+      }
+    }
+
+    macdSeries.setData(macdLineData);
+    signalSeries.setData(signalLineData);
+    histogramSeries.setData(histogramData);
+
+    window.addEventListener('resize', () => {
+      paneChart.applyOptions({ width: paneElement.clientWidth });
+    });
+    return paneChart;
+  }
+
+  // Add a pane for the indicator
+  // function addPane(indicator) {
+  //   if (Object.keys(activePanes).length >= MAX_PANES) {
+  //     alert(`Maximum ${MAX_PANES} panes allowed!`);
+  //     return false;
+  //   }
+
+  //   if (activePanes[indicator]) {
+  //     return false; // Already exists
+  //   }
+
+  //   const paneDiv = document.createElement('div');
+  //   paneDiv.className = 'pane';
+  //   paneDiv.id = `pane-${indicator}`;
+
+  //   const paneHeader = document.createElement('div');
+  //   paneHeader.className = 'pane-header';
+  //   paneHeader.textContent = indicator.toUpperCase();
+
+  //   const closeBtn = document.createElement('button');
+  //   closeBtn.className = 'pane-close-btn';
+  //   closeBtn.innerHTML = '×';
+  //   closeBtn.addEventListener('click', () => removePane(indicator));
+
+  //   paneHeader.appendChild(closeBtn);
+
+  //   const paneContent = document.createElement('div');
+  //   paneContent.className = 'pane-content';
+  //   paneContent.id = `pane-content-${indicator}`;
+
+  //   paneDiv.appendChild(paneHeader);
+  //   paneDiv.appendChild(paneContent);
+  //   panesContainer.appendChild(paneDiv);
+
+  //   // Draw indicator in pane
+  //   let paneChart = null;
+  //   if (indicator === 'rsi') {
+  //     paneChart = drawRSI(paneContent, raw.ohlcv);
+  //   } else if (indicator === 'atr') {
+  //     paneChart = drawATR(paneContent, raw.ohlcv);
+  //   } else if (indicator === 'volume') {
+  //     paneChart = drawVolume(paneContent, raw.ohlcv);
+  //   } else if (indicator === 'macd') {
+  //     paneChart = drawMACD(paneContent, raw.ohlcv);
+  //   }
+
+  //   activePanes[indicator] = paneChart;
+  //   return true;
+  // }
+
+  // Remove a pane for the indicator
+  // function removePane(indicator) {
+  //   if (!activePanes[indicator]) {
+  //     return;
+  //   }
+
+  //   const paneDiv = document.getElementById(`pane-${indicator}`);
+  //   if (paneDiv) {
+  //     paneDiv.remove();
+  //   }
+
+  //   delete activePanes[indicator];
+
+  //   // Uncheck the checkbox
+  //   const checkbox = document.querySelector(`input[data-indicator="${indicator}"]`);
+  //   if (checkbox) {
+  //     checkbox.checked = false;
+  //   }
+  // }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(event) {
+    if (trendDropdown && trendDropdownBtn && !trendDropdownBtn.contains(event.target) && !trendDropdown.contains(event.target)) {
+      trendDropdown.classList.remove('active');
+    }
+    if (maDropdown && maDropdownBtn && !maDropdownBtn.contains(event.target) && !maDropdown.contains(event.target)) {
+      maDropdown.classList.remove('active');
+    }
+    if (bbDropdown && bbDropdownBtn && !bbDropdownBtn.contains(event.target) && !bbDropdown.contains(event.target)) {
+      bbDropdown.classList.remove('active');
+    }
+    if (indicatorsDropdown && indicatorsDropdownBtn && !indicatorsDropdownBtn.contains(event.target) && !indicatorsDropdown.contains(event.target)) {
+      indicatorsDropdown.classList.remove('active');
+    }
+  });
+
+  // Indicators checkbox handlers
+  document.querySelectorAll('#indicators-dropdown input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function(e) {
+      const indicator = this.dataset.indicator;
+      const isChecked = this.checked;
+
+      // if (isChecked) {
+      //   addPane(indicator);
+      // } else {
+      //   removePane(indicator);
+      // }
+      drawVolume(chartInstance, raw.ohlcv)
+    });
+  });
+
+  // Update dropdown position on scroll with throttle
+  document.addEventListener('scroll', function() {
+    const now = Date.now();
+    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
+      positionIndicatorsDropdown();
+      lastDropdownUpdate = now;
+    }
+  }, true);
+
+  // Update dropdown position on window resize with throttle
+  window.addEventListener('resize', function() {
+    const now = Date.now();
+    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
+      positionIndicatorsDropdown();
+      lastDropdownUpdate = now;
+    }
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(event) {
+    if (indicatorsDropdown && indicatorsDropdownBtn && !indicatorsDropdownBtn.contains(event.target) && !indicatorsDropdown.contains(event.target)) {
+      indicatorsDropdown.classList.remove('active');
+    }
+  });
+
+  // Navigation option handlers (MA, Trend, BB remain as before)
   document.querySelectorAll('.nav-list input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', function(e) {
       const option = this.dataset.option;
       const isChecked = this.checked;
-      
-      if (option === 'ma') {
-        if (isChecked) {
-          drawMA(chartInstance, raw.ohlcv);
-        } else {
-          removeMA(chartInstance);
-        }
-      }
-      
-      if (option === 'bb') {
-        if (isChecked) {
-          drawBB(chartInstance, raw.ohlcv);
-        } else {
-          removeBB(chartInstance);
-        }
-      }
 
       if (option === 'trend') {
         const trendKey = this.dataset.trend;
@@ -752,6 +1498,92 @@
       }
       
       console.log(`Trend: ${trendKey}, Enabled: ${isChecked}`);
+    });
+  });
+
+  // Handle MA dropdown checkboxes
+  document.querySelectorAll('#ma-dropdown input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function(e) {
+      const maKey = this.dataset.ma;
+      const isChecked = this.checked;
+      
+      if (maKey === 'all') {
+        // If "All" is checked, check all other MA options and draw all
+        if (isChecked) {
+          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])').forEach(cb => {
+            cb.checked = true;
+          });
+          drawMA(chartInstance, raw.ohlcv, 'all');
+        } else {
+          // If "All" is unchecked, uncheck all other MA options and remove all
+          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])').forEach(cb => {
+            cb.checked = false;
+          });
+          removeMA(chartInstance, 'all');
+        }
+      } else {
+        // Individual MA selection
+        if (isChecked) {
+          drawMA(chartInstance, raw.ohlcv, maKey);
+        } else {
+          removeMA(chartInstance, maKey);
+        }
+        
+        // Check if all individual MAs are selected, then check "All"
+        const allIndividualChecked = Array.from(
+          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])')
+        ).every(cb => cb.checked);
+        
+        const allCheckbox = document.getElementById('opt-ma-all');
+        if (allCheckbox) {
+          allCheckbox.checked = allIndividualChecked;
+        }
+      }
+      
+      console.log(`MA: ${maKey}, Enabled: ${isChecked}`);
+    });
+  });
+
+  // Handle BB dropdown checkboxes
+  document.querySelectorAll('#bb-dropdown input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function(e) {
+      const bbKey = this.dataset.bb;
+      const isChecked = this.checked;
+      
+      if (bbKey === 'all') {
+        // If "All" is checked, check all other BB options and draw all
+        if (isChecked) {
+          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])').forEach(cb => {
+            cb.checked = true;
+          });
+          drawBB(chartInstance, raw.ohlcv, 'all');
+        } else {
+          // If "All" is unchecked, uncheck all other BB options and remove all
+          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])').forEach(cb => {
+            cb.checked = false;
+          });
+          removeBB(chartInstance, 'all');
+        }
+      } else {
+        // Individual BB band selection
+        if (isChecked) {
+          drawBB(chartInstance, raw.ohlcv, bbKey);
+        } else {
+          removeBB(chartInstance, bbKey);
+        }
+        
+        // Check if all individual BB options are selected, then check "All"
+        const allIndividualChecked = Array.from(
+          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])')
+        ).every(cb => cb.checked);
+        
+        const allCheckbox = document.getElementById('opt-bb-all');
+        if (allCheckbox) {
+          allCheckbox.checked = allIndividualChecked;
+        }
+      }
+      
+      console.log(`BB: ${bbKey}, Enabled: ${isChecked}`);
     });
   });
 
