@@ -292,6 +292,141 @@
 	  height: 100%;
 	  min-height: 130px;
 	}
+
+	/* Options Modal Styles */
+	.chart-options-btn {
+	  position: absolute;
+	  bottom: 10px;
+	  right: 10px;
+	  background-color: #ffffffff;
+	  color: #000;
+	  border: none;
+	  border-radius: 4px;
+	  padding: 8px 12px;
+	  cursor: pointer;
+	  font-size: 16px;
+	  z-index: 1000;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  transition: all 0.3s ease;
+	}
+
+	.chart-options-btn:hover {
+	  background-color: #2980b9;
+	  transform: scale(1.1);
+	}
+
+	#chart-container {
+	  position: relative;
+	}
+
+	.options-modal {
+	  display: none;
+	  position: fixed;
+	  z-index: 2000;
+	  left: 0;
+	  top: 0;
+	  width: 100%;
+	  height: 100%;
+	  background-color: rgba(0, 0, 0, 0.5);
+	  animation: fadeIn 0.3s ease;
+	}
+
+	.options-modal.show {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+
+	@keyframes fadeIn {
+	  from {
+	    opacity: 0;
+	  }
+	  to {
+	    opacity: 1;
+	  }
+	}
+
+	.options-modal-content {
+	  background-color: white;
+	  border-radius: 8px;
+	  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	  max-width: 600px;
+	  width: 90%;
+	  max-height: 80vh;
+	  overflow-y: auto;
+	  animation: slideIn 0.3s ease;
+	}
+
+	@keyframes slideIn {
+	  from {
+	    transform: translateY(-50px);
+	    opacity: 0;
+	  }
+	  to {
+	    transform: translateY(0);
+	    opacity: 1;
+	  }
+	}
+
+	.options-modal-header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  padding: 20px;
+	  border-bottom: 1px solid #ddd;
+	  background-color: #f9f9f9;
+	  border-radius: 8px 8px 0 0;
+	}
+
+	.options-modal-header h2 {
+	  margin: 0;
+	  font-size: 20px;
+	  color: #333;
+	}
+
+	.close-modal {
+	  font-size: 28px;
+	  font-weight: bold;
+	  color: #999;
+	  cursor: pointer;
+	  user-select: none;
+	  transition: color 0.3s ease;
+	}
+
+	.close-modal:hover {
+	  color: #333;
+	}
+
+	.options-modal-body {
+	  padding: 20px;
+	}
+
+	.options-modal-body .nav-list {
+	  flex-direction: column;
+	  align-items: flex-start;
+	}
+
+	.options-modal-body .nav-list li {
+	  width: 100%;
+	  margin-bottom: 12px;
+	}
+
+	.options-modal-body .dropdown-content {
+	  position: static;
+	  display: block;
+	  box-shadow: none;
+	  border: 1px solid #ddd;
+	  margin-top: 8px;
+	}
+
+	@media (max-width: 768px) {
+	  .options-modal-content {
+	    width: 95%;
+	    max-height: 90vh;
+	  }
+	}
   </style>
 
 </head>
@@ -329,131 +464,120 @@
           <div class="tab-content-wrapper">
             <!-- Chart Section -->
             <div class="chart-section">
-              <div id="chart-container" class="chart-container"></div>
+              <div id="chart-container" class="chart-container">
+                <button id="chart-options-btn" class="chart-options-btn" onclick="openOptionsModal()">
+                  <i class="bi bi-gear"></i>
+                </button>
+              </div>
             </div>
 
-            <!-- Panes Container -->
-            <div id="panes-container" class="panes-container"></div>
+            <!-- Options Modal -->
+            <div id="optionsModal" class="options-modal">
+              <div class="options-modal-content">
+                <div class="options-modal-header">
+                  <h2>Chart Options</h2>
+                  <span class="close-modal" onclick="closeOptionsModal()">&times;</span>
+                </div>
+                <div class="options-modal-body">
+                  <ul class="nav-list">
+                    <li>
+                      <label>
+                        <input type="checkbox" id="opt-volume" data-indicator="volume" />
+                        Volume
+                      </label>
+                    </li>
 
-            <!-- Navigation Section -->
-            <div class="navigation-section">
-            <ul class="nav-list">
-              <li>
-                <div class="dropdown">
-                  <button class="dropdown-btn dropdown-btn-ma">
-                    Moving Average
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                  <div class="dropdown-content" id="ma-dropdown">
-                    <label>
-                      <input type="checkbox" id="opt-ma-all" data-option="ma" data-ma="all" />
-                      All
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-ma-5" data-option="ma" data-ma="ma5" />
-                      MA 5
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-ma-20" data-option="ma" data-ma="ma20" />
-                      MA 20
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-ma-60" data-option="ma" data-ma="ma60" />
-                      MA 60
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-ma-120" data-option="ma" data-ma="ma120" />
-                      MA 120
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-ma-200" data-option="ma" data-ma="ma200" />
-                      MA 200
-                    </label>
-                  </div>
-                </div>
-              </li>
+                    <li>
+                      <div class="dropdown">
+                        <button class="dropdown-btn dropdown-btn-ma">
+                          Moving Average
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content" id="ma-dropdown">
+                          <label>
+                            <input type="checkbox" id="opt-ma-all" data-option="ma" data-ma="all" />
+                            All
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-ma-5" data-option="ma" data-ma="ma5" />
+                            MA 5
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-ma-20" data-option="ma" data-ma="ma20" />
+                            MA 20
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-ma-60" data-option="ma" data-ma="ma60" />
+                            MA 60
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-ma-120" data-option="ma" data-ma="ma120" />
+                            MA 120
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-ma-200" data-option="ma" data-ma="ma200" />
+                            MA 200
+                          </label>
+                        </div>
+                      </div>
+                    </li>
 
-              <li>
-                <div class="dropdown">
-                  <button class="dropdown-btn">
-                    Trend Lines
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                  <div class="dropdown-content" id="trend-dropdown">
-                    <label>
-                      <input type="checkbox" id="opt-trend-5y" data-option="trend" data-trend="trend_5y" />
-                      5Y Trend
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-trend-2y" data-option="trend" data-trend="trend_2y" />
-                      2Y Trend
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-trend-1y" data-option="trend" data-trend="trend_1y" />
-                      1Y Trend
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-trend-6m" data-option="trend" data-trend="trend_6m" />
-                      6M Trend
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-trend-3m" data-option="trend" data-trend="trend_3m" />
-                      3M Trend
-                    </label>
-                  </div>
-                </div>
-              </li>
+                    <li>
+                      <div class="dropdown">
+                        <button class="dropdown-btn">
+                          Trend Lines
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content" id="trend-dropdown">
+                          <label>
+                            <input type="checkbox" id="opt-trend-5y" data-option="trend" data-trend="trend_5y" />
+                            5Y Trend
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-trend-2y" data-option="trend" data-trend="trend_2y" />
+                            2Y Trend
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-trend-1y" data-option="trend" data-trend="trend_1y" />
+                            1Y Trend
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-trend-6m" data-option="trend" data-trend="trend_6m" />
+                            6M Trend
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-trend-3m" data-option="trend" data-trend="trend_3m" />
+                            3M Trend
+                          </label>
+                        </div>
+                      </div>
+                    </li>
 
-              <li>
-                <div class="dropdown">
-                  <button class="dropdown-btn dropdown-btn-bb">
-                    Bollinger Band
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                  <div class="dropdown-content" id="bb-dropdown">
-                    <label>
-                      <input type="checkbox" id="opt-bb-all" data-option="bb" data-bb="all" />
-                      All
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-bb-2x" data-option="bb" data-bb="2x" />
-                      2x Band
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-bb-1x" data-option="bb" data-bb="1x" />
-                      1x Band
-                    </label>
-                  </div>
+                    <li>
+                      <div class="dropdown">
+                        <button class="dropdown-btn dropdown-btn-bb">
+                          Bollinger Band
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-content" id="bb-dropdown">
+                          <label>
+                            <input type="checkbox" id="opt-bb-all" data-option="bb" data-bb="all" />
+                            All
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-bb-2x" data-option="bb" data-bb="2x" />
+                            2x Band
+                          </label>
+                          <label>
+                            <input type="checkbox" id="opt-bb-1x" data-option="bb" data-bb="1x" />
+                            1x Band
+                          </label>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-              </li>
-              
-              <li>
-                <div class="dropdown">
-                  <button class="dropdown-btn dropdown-btn-indicators">
-                    Indicators
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                  <div class="dropdown-content" id="indicators-dropdown">
-                    <label>
-                      <input type="checkbox" id="opt-rsi" data-indicator="rsi" />
-                      RSI
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-atr" data-indicator="atr" />
-                      ATR
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-volume" data-indicator="volume" />
-                      Volume
-                    </label>
-                    <label>
-                      <input type="checkbox" id="opt-macd" data-indicator="macd" />
-                      MACD
-                    </label>
-                  </div>
-                </div>
-              </li>
-            </ul>
+              </div>
             </div>
           </div>
 			  </div>
@@ -960,26 +1084,6 @@
       window.chartVolume = {};
     }
 
-    // const option = {
-    //   chart: {
-    //     width: paneElement.clientWidth,
-    //     height: paneElement.clientHeight,
-    //     layout: {
-    //       background: { color: '#fff' },
-    //       textColor: '#000',
-    //     },
-    //     rightPriceScale: {
-    //       mode: LightweightCharts.PriceScaleMode.Normal,
-    //       autoScale: true,
-    //     },
-    //     timeScale: {
-    //       timeVisible: false,
-    //       secondsVisible: false,
-    //     }
-    //   }
-    // };
-
-    // const paneChart = LightweightCharts.createChart(paneElement, option.chart);
     const volumeSeries = chart.addSeries(LightweightCharts.HistogramSeries, {
       color: '#787b86CC',
       // pane: 1,
@@ -1146,270 +1250,6 @@
   // Update dropdown position on window resize with throttle
   window.addEventListener('resize', throttledDropdownUpdate);
 
-  // ======================================================================
-  // INDICATORS & PANES SYSTEM
-  // ======================================================================
-
-  const indicatorsDropdownBtn = document.querySelector('.dropdown-btn-indicators');
-  const indicatorsDropdown = document.getElementById('indicators-dropdown');
-  const panesContainer = document.getElementById('panes-container');
-
-  const MAX_PANES = 4;
-  let activePanes = {}; // { 'rsi': chartInstance, 'atr': chartInstance, ... }
-
-  function positionIndicatorsDropdown() {
-    if (indicatorsDropdownBtn && indicatorsDropdown) {
-      const rect = indicatorsDropdownBtn.getBoundingClientRect();
-      indicatorsDropdown.style.top = (rect.bottom + 4) + 'px';
-      indicatorsDropdown.style.left = rect.left + 'px';
-    }
-  }
-
-  // Indicators dropdown handler
-  if (indicatorsDropdownBtn && indicatorsDropdown) {
-    indicatorsDropdownBtn.addEventListener('click', function() {
-      const isActive = indicatorsDropdown.classList.toggle('active');
-      if (trendDropdown) trendDropdown.classList.remove('active');
-      if (maDropdown) maDropdown.classList.remove('active');
-      if (bbDropdown) bbDropdown.classList.remove('active');
-      if (isActive) {
-        lastDropdownUpdate = 0;
-        positionIndicatorsDropdown();
-      }
-    });
-  }
-
-  // Pane drawing functions
-  // function drawRSI(paneElement, rsiData) {
-  //   const option = {
-  //     chart: {
-  //       width: paneElement.clientWidth,
-  //       height: paneElement.clientHeight,
-  //       layout: {
-  //         background: { color: '#fff' },
-  //         textColor: '#000',
-  //       },
-  //       rightPriceScale: {
-  //         mode: LightweightCharts.PriceScaleMode.Normal,
-  //         autoScale: true,
-  //       },
-  //       timeScale: {
-  //         timeVisible: false,
-  //         secondsVisible: false,
-  //       }
-  //     }
-  //   };
-
-  //   const paneChart = LightweightCharts.createChart(paneElement, option.chart);
-  //   const rsiSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
-  //     color: '#2196F3',
-  //   });
-
-  //   const rsiLineData = [];
-  //   for (let i = 0; i < rsiData.date.length; i++) {
-  //     if (rsiData.rsi && rsiData.rsi[i] !== null && rsiData.rsi[i] !== undefined) {
-  //       rsiLineData.push({
-  //         time: rsiData.date[i],
-  //         value: rsiData.rsi[i],
-  //       });
-  //     }
-  //   }
-
-  //   rsiSeries.setData(rsiLineData);
-  //   window.addEventListener('resize', () => {
-  //     paneChart.applyOptions({ width: paneElement.clientWidth });
-  //   });
-  //   return paneChart;
-  // }
-
-  // function drawATR(paneElement, atrData) {
-  //   const option = {
-  //     chart: {
-  //       width: paneElement.clientWidth,
-  //       height: paneElement.clientHeight,
-  //       layout: {
-  //         background: { color: '#fff' },
-  //         textColor: '#000',
-  //       },
-  //       rightPriceScale: {
-  //         mode: LightweightCharts.PriceScaleMode.Normal,
-  //         autoScale: true,
-  //       },
-  //       timeScale: {
-  //         timeVisible: false,
-  //         secondsVisible: false,
-  //       }
-  //     }
-  //   };
-
-  //   const paneChart = LightweightCharts.createChart(paneElement, option.chart);
-  //   const atrSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
-  //     color: '#FF9800',
-  //   });
-
-  //   const atrLineData = [];
-  //   for (let i = 0; i < atrData.date.length; i++) {
-  //     if (atrData.atr && atrData.atr[i] !== null && atrData.atr[i] !== undefined) {
-  //       atrLineData.push({
-  //         time: atrData.date[i],
-  //         value: atrData.atr[i],
-  //       });
-  //     }
-  //   }
-
-  //   atrSeries.setData(atrLineData);
-  //   window.addEventListener('resize', () => {
-  //     paneChart.applyOptions({ width: paneElement.clientWidth });
-  //   });
-  //   return paneChart;
-  // }
-
-  
-
-  function drawMACD(paneElement, macdData) {
-    const option = {
-      chart: {
-        width: paneElement.clientWidth,
-        height: paneElement.clientHeight,
-        layout: {
-          background: { color: '#fff' },
-          textColor: '#000',
-        },
-        rightPriceScale: {
-          mode: LightweightCharts.PriceScaleMode.Normal,
-          autoScale: true,
-        },
-        timeScale: {
-          timeVisible: false,
-          secondsVisible: false,
-        }
-      }
-    };
-
-    const paneChart = LightweightCharts.createChart(paneElement, option.chart);
-
-    // MACD line
-    const macdSeries = paneChart.addSeries(LightweightCharts.LineSeries, {
-      color: '#2196F3',
-      lineWidth: 2,
-    });
-
-    // Signal line
-    const signalSeries = paneChart.addSeries(LightweightCharts.LineSeries, {
-      color: '#FF9800',
-      lineWidth: 2,
-    });
-
-    // Histogram
-    const histogramSeries = paneChart.addSeries(LightweightCharts.HistogramSeries, {
-      color: '#9C27B0',
-    });
-
-    const macdLineData = [];
-    const signalLineData = [];
-    const histogramData = [];
-
-    for (let i = 0; i < macdData.date.length; i++) {
-      if (macdData.macd && macdData.macd[i] !== null && macdData.macd[i] !== undefined) {
-        macdLineData.push({
-          time: macdData.date[i],
-          value: macdData.macd[i],
-        });
-      }
-      if (macdData.signal && macdData.signal[i] !== null && macdData.signal[i] !== undefined) {
-        signalLineData.push({
-          time: macdData.date[i],
-          value: macdData.signal[i],
-        });
-      }
-      if (macdData.histogram && macdData.histogram[i] !== null && macdData.histogram[i] !== undefined) {
-        histogramData.push({
-          time: macdData.date[i],
-          value: macdData.histogram[i],
-        });
-      }
-    }
-
-    macdSeries.setData(macdLineData);
-    signalSeries.setData(signalLineData);
-    histogramSeries.setData(histogramData);
-
-    window.addEventListener('resize', () => {
-      paneChart.applyOptions({ width: paneElement.clientWidth });
-    });
-    return paneChart;
-  }
-
-  // Add a pane for the indicator
-  // function addPane(indicator) {
-  //   if (Object.keys(activePanes).length >= MAX_PANES) {
-  //     alert(`Maximum ${MAX_PANES} panes allowed!`);
-  //     return false;
-  //   }
-
-  //   if (activePanes[indicator]) {
-  //     return false; // Already exists
-  //   }
-
-  //   const paneDiv = document.createElement('div');
-  //   paneDiv.className = 'pane';
-  //   paneDiv.id = `pane-${indicator}`;
-
-  //   const paneHeader = document.createElement('div');
-  //   paneHeader.className = 'pane-header';
-  //   paneHeader.textContent = indicator.toUpperCase();
-
-  //   const closeBtn = document.createElement('button');
-  //   closeBtn.className = 'pane-close-btn';
-  //   closeBtn.innerHTML = '×';
-  //   closeBtn.addEventListener('click', () => removePane(indicator));
-
-  //   paneHeader.appendChild(closeBtn);
-
-  //   const paneContent = document.createElement('div');
-  //   paneContent.className = 'pane-content';
-  //   paneContent.id = `pane-content-${indicator}`;
-
-  //   paneDiv.appendChild(paneHeader);
-  //   paneDiv.appendChild(paneContent);
-  //   panesContainer.appendChild(paneDiv);
-
-  //   // Draw indicator in pane
-  //   let paneChart = null;
-  //   if (indicator === 'rsi') {
-  //     paneChart = drawRSI(paneContent, raw.ohlcv);
-  //   } else if (indicator === 'atr') {
-  //     paneChart = drawATR(paneContent, raw.ohlcv);
-  //   } else if (indicator === 'volume') {
-  //     paneChart = drawVolume(paneContent, raw.ohlcv);
-  //   } else if (indicator === 'macd') {
-  //     paneChart = drawMACD(paneContent, raw.ohlcv);
-  //   }
-
-  //   activePanes[indicator] = paneChart;
-  //   return true;
-  // }
-
-  // Remove a pane for the indicator
-  // function removePane(indicator) {
-  //   if (!activePanes[indicator]) {
-  //     return;
-  //   }
-
-  //   const paneDiv = document.getElementById(`pane-${indicator}`);
-  //   if (paneDiv) {
-  //     paneDiv.remove();
-  //   }
-
-  //   delete activePanes[indicator];
-
-  //   // Uncheck the checkbox
-  //   const checkbox = document.querySelector(`input[data-indicator="${indicator}"]`);
-  //   if (checkbox) {
-  //     checkbox.checked = false;
-  //   }
-  // }
-
   // Close dropdowns when clicking outside
   document.addEventListener('click', function(event) {
     if (trendDropdown && trendDropdownBtn && !trendDropdownBtn.contains(event.target) && !trendDropdown.contains(event.target)) {
@@ -1421,24 +1261,6 @@
     if (bbDropdown && bbDropdownBtn && !bbDropdownBtn.contains(event.target) && !bbDropdown.contains(event.target)) {
       bbDropdown.classList.remove('active');
     }
-    if (indicatorsDropdown && indicatorsDropdownBtn && !indicatorsDropdownBtn.contains(event.target) && !indicatorsDropdown.contains(event.target)) {
-      indicatorsDropdown.classList.remove('active');
-    }
-  });
-
-  // Indicators checkbox handlers
-  document.querySelectorAll('#indicators-dropdown input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function(e) {
-      const indicator = this.dataset.indicator;
-      const isChecked = this.checked;
-
-      // if (isChecked) {
-      //   addPane(indicator);
-      // } else {
-      //   removePane(indicator);
-      // }
-      drawVolume(chartInstance, raw.ohlcv)
-    });
   });
 
   // Update dropdown position on scroll with throttle
@@ -1457,32 +1279,6 @@
       positionIndicatorsDropdown();
       lastDropdownUpdate = now;
     }
-  });
-
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function(event) {
-    if (indicatorsDropdown && indicatorsDropdownBtn && !indicatorsDropdownBtn.contains(event.target) && !indicatorsDropdown.contains(event.target)) {
-      indicatorsDropdown.classList.remove('active');
-    }
-  });
-
-  // Navigation option handlers (MA, Trend, BB remain as before)
-  document.querySelectorAll('.nav-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function(e) {
-      const option = this.dataset.option;
-      const isChecked = this.checked;
-
-      if (option === 'trend') {
-        const trendKey = this.dataset.trend;
-        if (isChecked) {
-          drawTrend(chartInstance, raw.ohlcv, trendKey);
-        } else {
-          removeTrend(chartInstance, trendKey);
-        }
-      }
-      
-      console.log(`Option: ${option}, Enabled: ${isChecked}`);
-    });
   });
 
   // Also handle dropdown checkboxes (they're inside the content)
@@ -1587,6 +1383,38 @@
     });
   });
 
+
+  /* ======================================================================
+    OPTIONS MODAL FUNCTIONS
+  ====================================================================== */
+  function openOptionsModal() {
+    const modal = document.getElementById('optionsModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }
+
+  function closeOptionsModal() {
+    const modal = document.getElementById('optionsModal');
+    if (modal) {
+      modal.classList.remove('show');
+    }
+  }
+
+  // Close modal when clicking outside of it
+  window.addEventListener('click', function(event) {
+    const modal = document.getElementById('optionsModal');
+    if (modal && event.target === modal) {
+      closeOptionsModal();
+    }
+  });
+
+  // Close modal when pressing Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeOptionsModal();
+    }
+  });
 
 </script>
 </html>
