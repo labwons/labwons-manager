@@ -12,12 +12,14 @@
     
   <!-- Dependencies -->
   <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-<!--  <script src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/js/jquery-3.6.1.min.js"></script>-->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!--  <script src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/js/plotly-2.35.2-r0.1.min.js"></script>-->
 <!--  <script src="https://raw.githubusercontent.com/labwons/labwons/refs/heads/main/docs/src/js/labwons-1.0.0.js" defer></script>-->
 
   <!-- CSS Files -->
-  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/icon.min.css" rel="stylesheet"> 
+  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/icon.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 <!--  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/apexcharts.css" rel="stylesheet">-->
   <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/style.min.css" rel="stylesheet">
   
@@ -296,13 +298,13 @@
 	/* Options Modal Styles */
 	.chart-options-btn {
 	  position: absolute;
-	  bottom: 10px;
-	  right: 10px;
-	  background-color: #ffffffff;
+	  bottom: 0;
+	  right: 12px;
+	  background-color: rgba(255, 255, 255, 0.0);
 	  color: #000;
 	  border: none;
 	  border-radius: 4px;
-	  padding: 8px 12px;
+	  padding: 4px 12px;
 	  cursor: pointer;
 	  font-size: 16px;
 	  z-index: 1000;
@@ -313,8 +315,8 @@
 	}
 
 	.chart-options-btn:hover {
-	  background-color: #2980b9;
-	  transform: scale(1.1);
+	  background-color: var(--nav-color);
+    color: white;
 	}
 
 	#chart-container {
@@ -421,6 +423,70 @@
 	  margin-top: 8px;
 	}
 
+	/* Select2 Custom Styling */
+	/* .select2-container--default .select2-selection--multiple {
+	  border: 1px solid #ddd;
+	  border-radius: 4px;
+	  min-height: 38px;
+	  padding: 4px;
+	}
+
+	.select2-container--default.select2-container--focus .select2-selection--multiple {
+	  border-color: #3498db;
+	  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+	}
+
+	.select2-container--default .select2-selection--multiple .select2-selection__choice {
+	  background-color: #3498db;
+	  border-color: #2980b9;
+	  color: white;
+	  padding: 4px 8px;
+	  border-radius: 3px;
+	}
+
+	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	  color: white;
+	  margin-right: 4px;
+	}
+
+	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+	  color: #f1f1f1;
+	}
+
+	.select2-container--default .select2-dropdown {
+	  border: 1px solid #ddd;
+	  border-radius: 4px;
+	  margin-top: 4px;
+	}
+
+	.select2-container--default .select2-results__option[aria-disabled=true] {
+	  color: #999;
+	}
+
+	.select2-container--default .select2-results__group {
+	  color: #333;
+	  font-weight: 600;
+	  padding: 8px 12px;
+	  background-color: #f5f5f5;
+	}
+
+	.options-modal-body .select2-container {
+	  width: 100%;
+	  margin-bottom: 12px;
+	} */
+
+	.indicator-section {
+	  margin-bottom: 20px;
+	}
+
+	.indicator-section label {
+	  display: block;
+	  font-weight: 600;
+	  margin-bottom: 8px;
+	  color: #333;
+	  font-size: 14px;
+	}
+
 	@media (max-width: 768px) {
 	  .options-modal-content {
 	    width: 95%;
@@ -479,103 +545,36 @@
                   <span class="close-modal" onclick="closeOptionsModal()">&times;</span>
                 </div>
                 <div class="options-modal-body">
-                  <ul class="nav-list">
-                    <li>
-                      <label>
-                        <input type="checkbox" id="opt-volume" data-indicator="volume" />
-                        Volume
-                      </label>
-                    </li>
+                  <div class="indicator-section">
+                    <label>
+                      <input type="checkbox" id="opt-volume" data-indicator="volume" />
+                      Volume
+                    </label>
+                  </div>
 
-                    <li>
-                      <div class="dropdown">
-                        <button class="dropdown-btn dropdown-btn-ma">
-                          Moving Average
-                          <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-content" id="ma-dropdown">
-                          <label>
-                            <input type="checkbox" id="opt-ma-all" data-option="ma" data-ma="all" />
-                            All
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-ma-5" data-option="ma" data-ma="ma5" />
-                            MA 5
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-ma-20" data-option="ma" data-ma="ma20" />
-                            MA 20
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-ma-60" data-option="ma" data-ma="ma60" />
-                            MA 60
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-ma-120" data-option="ma" data-ma="ma120" />
-                            MA 120
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-ma-200" data-option="ma" data-ma="ma200" />
-                            MA 200
-                          </label>
-                        </div>
-                      </div>
-                    </li>
-
-                    <li>
-                      <div class="dropdown">
-                        <button class="dropdown-btn">
-                          Trend Lines
-                          <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-content" id="trend-dropdown">
-                          <label>
-                            <input type="checkbox" id="opt-trend-5y" data-option="trend" data-trend="trend_5y" />
-                            5Y Trend
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-trend-2y" data-option="trend" data-trend="trend_2y" />
-                            2Y Trend
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-trend-1y" data-option="trend" data-trend="trend_1y" />
-                            1Y Trend
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-trend-6m" data-option="trend" data-trend="trend_6m" />
-                            6M Trend
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-trend-3m" data-option="trend" data-trend="trend_3m" />
-                            3M Trend
-                          </label>
-                        </div>
-                      </div>
-                    </li>
-
-                    <li>
-                      <div class="dropdown">
-                        <button class="dropdown-btn dropdown-btn-bb">
-                          Bollinger Band
-                          <i class="bi bi-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-content" id="bb-dropdown">
-                          <label>
-                            <input type="checkbox" id="opt-bb-all" data-option="bb" data-bb="all" />
-                            All
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-bb-2x" data-option="bb" data-bb="2x" />
-                            2x Band
-                          </label>
-                          <label>
-                            <input type="checkbox" id="opt-bb-1x" data-option="bb" data-bb="1x" />
-                            1x Band
-                          </label>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
+                  <div class="indicator-section">
+                    <label for="chart-indicators">Chart Indicators</label>
+                    <select id="chart-indicators" class="form-control" multiple="multiple">
+                      <optgroup label="Moving Average">
+                        <option value="ma5">MA 5</option>
+                        <option value="ma20">MA 20</option>
+                        <option value="ma60">MA 60</option>
+                        <option value="ma120">MA 120</option>
+                        <option value="ma200">MA 200</option>
+                      </optgroup>
+                      <optgroup label="Trend Lines">
+                        <option value="trend_5y">5Y Trend</option>
+                        <option value="trend_2y">2Y Trend</option>
+                        <option value="trend_1y">1Y Trend</option>
+                        <option value="trend_6m">6M Trend</option>
+                        <option value="trend_3m">3M Trend</option>
+                      </optgroup>
+                      <optgroup label="Bollinger Band">
+                        <option value="bb_2x">2x Band</option>
+                        <option value="bb_1x">1x Band</option>
+                      </optgroup>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1152,235 +1151,47 @@
   };
   const chartInstance = drawOhlc(document.querySelector('#chart-container'), data);
 
-  // Helper function to position dropdown relative to button
-  let lastDropdownUpdate = 0;
-  const dropdownUpdateThrottle = 16; // ~60fps throttle
-  const trendDropdownBtn = document.querySelector('.dropdown-btn:not(.dropdown-btn-ma):not(.dropdown-btn-bb)');
-  const trendDropdown = document.getElementById('trend-dropdown');
-  const maDropdownBtn = document.querySelector('.dropdown-btn-ma');
-  const maDropdown = document.getElementById('ma-dropdown');
-  const bbDropdownBtn = document.querySelector('.dropdown-btn-bb');
-  const bbDropdown = document.getElementById('bb-dropdown');
-  
-  function positionTrendDropdown() {
-    if (trendDropdownBtn && trendDropdown) {
-      const rect = trendDropdownBtn.getBoundingClientRect();
-      trendDropdown.style.top = (rect.bottom + 4) + 'px';
-      trendDropdown.style.left = rect.left + 'px';
-    }
-  }
-
-  function positionMADropdown() {
-    if (maDropdownBtn && maDropdown) {
-      const rect = maDropdownBtn.getBoundingClientRect();
-      maDropdown.style.top = (rect.bottom + 4) + 'px';
-      maDropdown.style.left = rect.left + 'px';
-    }
-  }
-
-  function positionBBDropdown() {
-    if (bbDropdownBtn && bbDropdown) {
-      const rect = bbDropdownBtn.getBoundingClientRect();
-      bbDropdown.style.top = (rect.bottom + 4) + 'px';
-      bbDropdown.style.left = rect.left + 'px';
-    }
-  }
-
-  function throttledDropdownUpdate() {
-    const now = Date.now();
-    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
-      positionTrendDropdown();
-      positionMADropdown();
-      positionBBDropdown();
-      lastDropdownUpdate = now;
-    }
-  }
-
-  if (trendDropdownBtn && trendDropdown) {
-    trendDropdownBtn.addEventListener('click', function() {
-      const isActive = trendDropdown.classList.toggle('active');
-      if (maDropdown) {
-        maDropdown.classList.remove('active');
-      }
-      if (bbDropdown) {
-        bbDropdown.classList.remove('active');
-      }
-      if (isActive) {
-        lastDropdownUpdate = 0;
-        positionTrendDropdown();
-      }
-    });
-  }
-
-  if (maDropdownBtn && maDropdown) {
-    maDropdownBtn.addEventListener('click', function() {
-      const isActive = maDropdown.classList.toggle('active');
-      if (trendDropdown) {
-        trendDropdown.classList.remove('active');
-      }
-      if (bbDropdown) {
-        bbDropdown.classList.remove('active');
-      }
-      if (isActive) {
-        lastDropdownUpdate = 0;
-        positionMADropdown();
-      }
-    });
-  }
-
-  if (bbDropdownBtn && bbDropdown) {
-    bbDropdownBtn.addEventListener('click', function() {
-      const isActive = bbDropdown.classList.toggle('active');
-      if (trendDropdown) {
-        trendDropdown.classList.remove('active');
-      }
-      if (maDropdown) {
-        maDropdown.classList.remove('active');
-      }
-      if (isActive) {
-        lastDropdownUpdate = 0;
-        positionBBDropdown();
-      }
-    });
-  }
-
-  // Update dropdown position on scroll with throttle
-  document.addEventListener('scroll', throttledDropdownUpdate, true);
-
-  // Update dropdown position on window resize with throttle
-  window.addEventListener('resize', throttledDropdownUpdate);
-
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function(event) {
-    if (trendDropdown && trendDropdownBtn && !trendDropdownBtn.contains(event.target) && !trendDropdown.contains(event.target)) {
-      trendDropdown.classList.remove('active');
-    }
-    if (maDropdown && maDropdownBtn && !maDropdownBtn.contains(event.target) && !maDropdown.contains(event.target)) {
-      maDropdown.classList.remove('active');
-    }
-    if (bbDropdown && bbDropdownBtn && !bbDropdownBtn.contains(event.target) && !bbDropdown.contains(event.target)) {
-      bbDropdown.classList.remove('active');
-    }
-  });
-
-  // Update dropdown position on scroll with throttle
-  document.addEventListener('scroll', function() {
-    const now = Date.now();
-    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
-      positionIndicatorsDropdown();
-      lastDropdownUpdate = now;
-    }
-  }, true);
-
-  // Update dropdown position on window resize with throttle
-  window.addEventListener('resize', function() {
-    const now = Date.now();
-    if (now - lastDropdownUpdate >= dropdownUpdateThrottle) {
-      positionIndicatorsDropdown();
-      lastDropdownUpdate = now;
-    }
-  });
-
-  // Also handle dropdown checkboxes (they're inside the content)
-  document.querySelectorAll('#trend-dropdown input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function(e) {
-      const trendKey = this.dataset.trend;
-      const isChecked = this.checked;
-      
-      if (isChecked) {
-        drawTrend(chartInstance, raw.ohlcv, trendKey);
-      } else {
-        removeTrend(chartInstance, trendKey);
-      }
-      
-      console.log(`Trend: ${trendKey}, Enabled: ${isChecked}`);
+  // Initialize Select2
+  $(document).ready(function() {
+    $('#chart-indicators').select2({
+      dropdownParent: $('#optionsModal'),
+      placeholder: 'Select indicators',
+      allowClear: true,
+      width: '100%'
     });
   });
 
-  // Handle MA dropdown checkboxes
-  document.querySelectorAll('#ma-dropdown input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function(e) {
-      const maKey = this.dataset.ma;
-      const isChecked = this.checked;
-      
-      if (maKey === 'all') {
-        // If "All" is checked, check all other MA options and draw all
-        if (isChecked) {
-          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])').forEach(cb => {
-            cb.checked = true;
-          });
-          drawMA(chartInstance, raw.ohlcv, 'all');
-        } else {
-          // If "All" is unchecked, uncheck all other MA options and remove all
-          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])').forEach(cb => {
-            cb.checked = false;
-          });
-          removeMA(chartInstance, 'all');
-        }
-      } else {
-        // Individual MA selection
-        if (isChecked) {
-          drawMA(chartInstance, raw.ohlcv, maKey);
-        } else {
-          removeMA(chartInstance, maKey);
-        }
-        
-        // Check if all individual MAs are selected, then check "All"
-        const allIndividualChecked = Array.from(
-          document.querySelectorAll('#ma-dropdown input[type="checkbox"]:not([data-ma="all"])')
-        ).every(cb => cb.checked);
-        
-        const allCheckbox = document.getElementById('opt-ma-all');
-        if (allCheckbox) {
-          allCheckbox.checked = allIndividualChecked;
-        }
+  // Handle Select2 change event for indicators
+  $('#chart-indicators').on('change', function() {
+    const selectedValues = $(this).val() || [];
+    const allOptions = ['ma5', 'ma20', 'ma60', 'ma120', 'ma200', 'trend_5y', 'trend_2y', 'trend_1y', 'trend_6m', 'trend_3m', 'bb_2x', 'bb_1x'];
+    
+    // Remove all existing indicators first
+    allOptions.forEach(option => {
+      if (option.startsWith('ma')) {
+        removeMA(chartInstance, option);
+      } else if (option.startsWith('trend')) {
+        removeTrend(chartInstance, option);
+      } else if (option.startsWith('bb')) {
+        const bbKey = option === 'bb_2x' ? '2x' : '1x';
+        removeBB(chartInstance, bbKey);
       }
-      
-      console.log(`MA: ${maKey}, Enabled: ${isChecked}`);
     });
-  });
-
-  // Handle BB dropdown checkboxes
-  document.querySelectorAll('#bb-dropdown input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function(e) {
-      const bbKey = this.dataset.bb;
-      const isChecked = this.checked;
-      
-      if (bbKey === 'all') {
-        // If "All" is checked, check all other BB options and draw all
-        if (isChecked) {
-          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])').forEach(cb => {
-            cb.checked = true;
-          });
-          drawBB(chartInstance, raw.ohlcv, 'all');
-        } else {
-          // If "All" is unchecked, uncheck all other BB options and remove all
-          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])').forEach(cb => {
-            cb.checked = false;
-          });
-          removeBB(chartInstance, 'all');
-        }
-      } else {
-        // Individual BB band selection
-        if (isChecked) {
-          drawBB(chartInstance, raw.ohlcv, bbKey);
-        } else {
-          removeBB(chartInstance, bbKey);
-        }
-        
-        // Check if all individual BB options are selected, then check "All"
-        const allIndividualChecked = Array.from(
-          document.querySelectorAll('#bb-dropdown input[type="checkbox"]:not([data-bb="all"])')
-        ).every(cb => cb.checked);
-        
-        const allCheckbox = document.getElementById('opt-bb-all');
-        if (allCheckbox) {
-          allCheckbox.checked = allIndividualChecked;
-        }
+    
+    // Add selected indicators
+    selectedValues.forEach(value => {
+      if (value.startsWith('ma')) {
+        drawMA(chartInstance, raw.ohlcv, value);
+      } else if (value.startsWith('trend')) {
+        drawTrend(chartInstance, raw.ohlcv, value);
+      } else if (value === 'bb_2x') {
+        drawBB(chartInstance, raw.ohlcv, '2x');
+      } else if (value === 'bb_1x') {
+        drawBB(chartInstance, raw.ohlcv, '1x');
       }
-      
-      console.log(`BB: ${bbKey}, Enabled: ${isChecked}`);
     });
+    
+    console.log('Selected indicators:', selectedValues);
   });
 
 
