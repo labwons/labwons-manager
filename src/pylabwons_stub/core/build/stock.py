@@ -25,6 +25,27 @@ class Stock(Ticker):
     #         )
     #     return
 
+    @property
+    def _t_annual_statement(self) -> DataFrame:
+        return self.__getattribute__('__t_annual_statement')
+
+    @_t_annual_statement.setter
+    def _t_annual_statement(self, value):
+        self.__setattr__('__t_annual_statement', value)
+
+    @property
+    def _t_quarter_statement(self) -> DataFrame:
+        return self.__getattribute__('__t_quarter_statement')
+
+    @_t_quarter_statement.setter
+    def _t_quarter_statement(self, value):
+        self.__setattr__('__t_quarter_statement', value)
+
+    def __fund__(self, spec):
+        data = spec.to_dict(orient='list')
+        data['date'] = spec.index.tolist()
+        return data
+
     def __tech__(self):
         tech = {"date": self.ohlcv.index.strftime("%Y-%m-%d").tolist()}
         for col in self.ohlcv:
@@ -32,7 +53,6 @@ class Stock(Ticker):
             if col.startswith('trend'):
                 tech[f'{col}_dev'] = round(2 * (self.ohlcv['close'] - self.ohlcv[col]).std(), 2)
         return tech
-
 
     def release(self, path:Union[str, Path]=None):
         if path is None:
@@ -49,6 +69,8 @@ class Stock(Ticker):
                     "title": f"LAB￦ONS: {self.snapshot['name']}({self.ticker})",
                     "ticker": self.ticker,
                     "tech": dumps(tech).replace("NaN", "null"),
+                    "annual": dumps(self.__fund__(self._t_annual_statement)),
+                    "quarter": dumps(self.__fund__(self._t_quarter_statement))
                 })
             )
         return
@@ -60,7 +82,10 @@ if __name__ == "__main__":
     stock = Stock('000660')
     stock.baseline = pd.read_parquet(PATH.PARQUET.BASELINE, engine='pyarrow')
     stock.ohlcv = pd.read_parquet(r'C:\Users\Administrator\Downloads\sample_ohlcv.parquet', engine='pyarrow')
+    stock._t_annual_statement = pd.read_parquet(r'C:\Users\Administrator\Downloads\sample_annual_statement.parquet', engine='pyarrow')
+    stock._t_quarter_statement = pd.read_parquet(r'C:\Users\Administrator\Downloads\sample_quarter_statement.parquet',engine='pyarrow')
+
     stock.release(PATH.DOWNLOADS)
 
-    print(stock.ohlcv.columns)
+    # print(stock.ohlcv.columns)
     # print(stock.ohlcv)

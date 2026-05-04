@@ -12,14 +12,13 @@
     
   <!-- Dependencies -->
   <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <!--  <script src="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/js/plotly-2.35.2-r0.1.min.js"></script>-->
 <!--  <script src="https://raw.githubusercontent.com/labwons/labwons/refs/heads/main/docs/src/js/labwons-1.0.0.js" defer></script>-->
 
   <!-- CSS Files -->
   <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/icon.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 <!--  <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/apexcharts.css" rel="stylesheet">-->
   <link href="https://cdn.jsdelivr.net/gh/labwons/labwons/docs/src/css/style.min.css" rel="stylesheet">
   
@@ -37,6 +36,10 @@
     const __fonts__ = 'NanumGothic, Nanum Gothic, Open Sans, sans-serif';
     const raw = {
       ohlcv: {{ tech }},
+      stats: {
+        a: {{ annual }},
+        q: {{ quarter }}
+      }
     }
 
     /* ======================================================================
@@ -403,6 +406,8 @@
 
 	.options-modal-body {
 	  padding: 20px;
+	  max-height: 50dvh;
+	  overflow-y: auto;
 	}
 
 	.options-modal-body .nav-list {
@@ -423,57 +428,45 @@
 	  margin-top: 8px;
 	}
 
-	/* Select2 Custom Styling */
-	/* .select2-container--default .select2-selection--multiple {
-	  border: 1px solid #ddd;
-	  border-radius: 4px;
-	  min-height: 38px;
-	  padding: 4px;
+	.indicator-group {
+	  margin-bottom: 20px;
 	}
 
-	.select2-container--default.select2-container--focus .select2-selection--multiple {
-	  border-color: #3498db;
-	  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-	}
-
-	.select2-container--default .select2-selection--multiple .select2-selection__choice {
-	  background-color: #3498db;
-	  border-color: #2980b9;
-	  color: white;
-	  padding: 4px 8px;
-	  border-radius: 3px;
-	}
-
-	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-	  color: white;
-	  margin-right: 4px;
-	}
-
-	.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-	  color: #f1f1f1;
-	}
-
-	.select2-container--default .select2-dropdown {
-	  border: 1px solid #ddd;
-	  border-radius: 4px;
-	  margin-top: 4px;
-	}
-
-	.select2-container--default .select2-results__option[aria-disabled=true] {
-	  color: #999;
-	}
-
-	.select2-container--default .select2-results__group {
-	  color: #333;
+	.indicator-group-title {
 	  font-weight: 600;
-	  padding: 8px 12px;
-	  background-color: #f5f5f5;
+	  color: #333;
+	  font-size: 14px;
+	  padding: 8px 0;
+	  border-bottom: 1px solid #ddd;
+	  margin-bottom: 10px;
 	}
 
-	.options-modal-body .select2-container {
-	  width: 100%;
-	  margin-bottom: 12px;
-	} */
+	.indicator-group-content {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 8px;
+	}
+
+	.indicator-item {
+	  display: flex;
+	  align-items: center;
+	}
+
+	.indicator-item input[type="checkbox"] {
+	  margin-right: 8px;
+	  cursor: pointer;
+	}
+
+	.indicator-item label {
+	  margin: 0;
+	  cursor: pointer;
+	  font-size: 14px;
+	  user-select: none;
+	}
+
+	.indicator-item label:hover {
+	  color: #3498db;
+	}
 
 	.indicator-section {
 	  margin-bottom: 20px;
@@ -553,27 +546,71 @@
                   </div>
 
                   <div class="indicator-section">
-                    <label for="chart-indicators">Chart Indicators</label>
-                    <select id="chart-indicators" class="form-control" multiple="multiple">
-                      <optgroup label="Moving Average">
-                        <option value="ma5">MA 5</option>
-                        <option value="ma20">MA 20</option>
-                        <option value="ma60">MA 60</option>
-                        <option value="ma120">MA 120</option>
-                        <option value="ma200">MA 200</option>
-                      </optgroup>
-                      <optgroup label="Trend Lines">
-                        <option value="trend_5y">5Y Trend</option>
-                        <option value="trend_2y">2Y Trend</option>
-                        <option value="trend_1y">1Y Trend</option>
-                        <option value="trend_6m">6M Trend</option>
-                        <option value="trend_3m">3M Trend</option>
-                      </optgroup>
-                      <optgroup label="Bollinger Band">
-                        <option value="bb_2x">2x Band</option>
-                        <option value="bb_1x">1x Band</option>
-                      </optgroup>
-                    </select>
+                    <div class="indicator-group">
+                      <div class="indicator-group-title">Moving Average</div>
+                      <div class="indicator-group-content">
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma5" data-indicator="ma5" />
+                          <label for="ind-ma5">MA 5</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma20" data-indicator="ma20" />
+                          <label for="ind-ma20">MA 20</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma60" data-indicator="ma60" />
+                          <label for="ind-ma60">MA 60</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma120" data-indicator="ma120" />
+                          <label for="ind-ma120">MA 120</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma200" data-indicator="ma200" />
+                          <label for="ind-ma200">MA 200</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="indicator-group">
+                      <div class="indicator-group-title">Trend Lines</div>
+                      <div class="indicator-group-content">
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-5y" data-indicator="trend_5y" />
+                          <label for="ind-trend-5y">5Y Trend</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-2y" data-indicator="trend_2y" />
+                          <label for="ind-trend-2y">2Y Trend</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-1y" data-indicator="trend_1y" />
+                          <label for="ind-trend-1y">1Y Trend</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-6m" data-indicator="trend_6m" />
+                          <label for="ind-trend-6m">6M Trend</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-3m" data-indicator="trend_3m" />
+                          <label for="ind-trend-3m">3M Trend</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="indicator-group">
+                      <div class="indicator-group-title">Bollinger Band</div>
+                      <div class="indicator-group-content">
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-bb-2x" data-indicator="bb_2x" />
+                          <label for="ind-bb-2x">2x Band</label>
+                        </div>
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-bb-1x" data-indicator="bb_1x" />
+                          <label for="ind-bb-1x">1x Band</label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1151,47 +1188,41 @@
   };
   const chartInstance = drawOhlc(document.querySelector('#chart-container'), data);
 
-  // Initialize Select2
-  $(document).ready(function() {
-    $('#chart-indicators').select2({
-      dropdownParent: $('#optionsModal'),
-      placeholder: 'Select indicators',
-      allowClear: true,
-      width: '100%'
-    });
-  });
-
-  // Handle Select2 change event for indicators
-  $('#chart-indicators').on('change', function() {
-    const selectedValues = $(this).val() || [];
-    const allOptions = ['ma5', 'ma20', 'ma60', 'ma120', 'ma200', 'trend_5y', 'trend_2y', 'trend_1y', 'trend_6m', 'trend_3m', 'bb_2x', 'bb_1x'];
-    
-    // Remove all existing indicators first
-    allOptions.forEach(option => {
-      if (option.startsWith('ma')) {
-        removeMA(chartInstance, option);
-      } else if (option.startsWith('trend')) {
-        removeTrend(chartInstance, option);
-      } else if (option.startsWith('bb')) {
-        const bbKey = option === 'bb_2x' ? '2x' : '1x';
-        removeBB(chartInstance, bbKey);
+  // Handle checkbox change event for indicators
+  document.querySelectorAll('input[type="checkbox"][data-indicator]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const indicator = this.dataset.indicator;
+      
+      if (this.checked) {
+        // Add indicator
+        if (indicator.startsWith('ma')) {
+          drawMA(chartInstance, raw.ohlcv, indicator);
+        } else if (indicator.startsWith('trend')) {
+          drawTrend(chartInstance, raw.ohlcv, indicator);
+        } else if (indicator === 'bb_2x') {
+          drawBB(chartInstance, raw.ohlcv, '2x');
+        } else if (indicator === 'bb_1x') {
+          drawBB(chartInstance, raw.ohlcv, '1x');
+        } else if (indicator === 'volume') {
+          drawVolume(chartInstance, raw.ohlcv);
+        }
+      } else {
+        // Remove indicator
+        if (indicator.startsWith('ma')) {
+          removeMA(chartInstance, indicator);
+        } else if (indicator.startsWith('trend')) {
+          removeTrend(chartInstance, indicator);
+        } else if (indicator === 'bb_2x') {
+          removeBB(chartInstance, '2x');
+        } else if (indicator === 'bb_1x') {
+          removeBB(chartInstance, '1x');
+        } else if (indicator === 'volume') {
+          removeVolume(chartInstance);
+        }
       }
+      
+      console.log('Indicator toggled:', indicator, 'Checked:', this.checked);
     });
-    
-    // Add selected indicators
-    selectedValues.forEach(value => {
-      if (value.startsWith('ma')) {
-        drawMA(chartInstance, raw.ohlcv, value);
-      } else if (value.startsWith('trend')) {
-        drawTrend(chartInstance, raw.ohlcv, value);
-      } else if (value === 'bb_2x') {
-        drawBB(chartInstance, raw.ohlcv, '2x');
-      } else if (value === 'bb_1x') {
-        drawBB(chartInstance, raw.ohlcv, '1x');
-      }
-    });
-    
-    console.log('Selected indicators:', selectedValues);
   });
 
 
