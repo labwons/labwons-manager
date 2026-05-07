@@ -550,6 +550,10 @@
                       <div class="indicator-group-title">Moving Average</div>
                       <div class="indicator-group-content">
                         <div class="indicator-item">
+                          <input type="checkbox" id="ind-ma-all" class="group-all" data-group="ma" />
+                          <label for="ind-ma-all">ALL</label>
+                        </div>
+                        <div class="indicator-item">
                           <input type="checkbox" id="ind-ma5" data-indicator="ma5" />
                           <label for="ind-ma5">MA 5</label>
                         </div>
@@ -575,6 +579,10 @@
                     <div class="indicator-group">
                       <div class="indicator-group-title">Trend Lines</div>
                       <div class="indicator-group-content">
+                        <div class="indicator-item">
+                          <input type="checkbox" id="ind-trend-all" class="group-all" data-group="trend" />
+                          <label for="ind-trend-all">ALL</label>
+                        </div>
                         <div class="indicator-item">
                           <input type="checkbox" id="ind-trend-5y" data-indicator="trend_5y" />
                           <label for="ind-trend-5y">5Y Trend</label>
@@ -602,6 +610,10 @@
                       <div class="indicator-group-title">Bollinger Band</div>
                       <div class="indicator-group-content">
                         <div class="indicator-item">
+                          <input type="checkbox" id="ind-bb-all" class="group-all" data-group="bb" />
+                          <label for="ind-bb-all">ALL</label>
+                        </div>
+                        <div class="indicator-item">
                           <input type="checkbox" id="ind-bb-2x" data-indicator="bb_2x" />
                           <label for="ind-bb-2x">2x Band</label>
                         </div>
@@ -618,8 +630,35 @@
           </div>
 			  </div>
 			  <div id="tab2" class="tab-content">
-				<h3>콘텐츠 2</h3>
-				<p>두 번째 탭의 내용입니다.</p>
+				<div class="tab-content-wrapper">
+				  <div style="flex: 0 0 auto; padding: 12px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9;">
+					<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+					  <div style="display: flex; gap: 8px;">
+						<input type="checkbox" id="fin-marketcap" data-indicator="marketcap" checked />
+						<label for="fin-marketcap">시가총액</label>
+					  </div>
+					  <div style="display: flex; gap: 8px;">
+						<input type="checkbox" id="fin-revenue" data-indicator="revenue" checked />
+						<label for="fin-revenue">매출액</label>
+					  </div>
+					  <div style="display: flex; gap: 8px;">
+						<input type="checkbox" id="fin-operating-income" data-indicator="operating_income" checked />
+						<label for="fin-operating-income">영업이익</label>
+					  </div>
+					  <div style="display: flex; gap: 8px;">
+						<input type="checkbox" id="fin-net-income" data-indicator="net_income" checked />
+						<label for="fin-net-income">당기순이익</label>
+					  </div>
+					  <div style="display: flex; gap: 8px;">
+						<input type="checkbox" id="fin-operating-margin" data-indicator="operating_margin" checked />
+						<label for="fin-operating-margin">영업이익률</label>
+					  </div>
+					</div>
+				  </div>
+				  <div class="chart-section">
+					<canvas id="financialChart"></canvas>
+				  </div>
+				</div>
 			  </div>
 			  <div id="tab3" class="tab-content">
 				<h3>콘텐츠 3</h3>
@@ -1188,6 +1227,8 @@
   };
   const chartInstance = drawOhlc(document.querySelector('#chart-container'), data);
 
+  let isUpdatingFromAll = false;
+
   // Handle checkbox change event for indicators
   document.querySelectorAll('input[type="checkbox"][data-indicator]').forEach(checkbox => {
     checkbox.addEventListener('change', function() {
@@ -1221,7 +1262,79 @@
         }
       }
       
+      // Update ALL checkbox state for this group (but not if we're updating from ALL)
+      if (!isUpdatingFromAll) {
+        updateAllCheckboxState(indicator);
+      }
+      
       console.log('Indicator toggled:', indicator, 'Checked:', this.checked);
+    });
+  });
+  
+  // Function to update ALL checkbox state based on individual items
+  function updateAllCheckboxState(indicator) {
+    let group = null;
+    
+    if (indicator.startsWith('ma')) {
+      group = 'ma';
+    } else if (indicator.startsWith('trend')) {
+      group = 'trend';
+    } else if (indicator.startsWith('bb')) {
+      group = 'bb';
+    }
+    
+    if (!group) return;
+    
+    const allCheckbox = document.getElementById('ind-' + group + '-all');
+    const groupCheckboxes = document.querySelectorAll('input[data-indicator]');
+    let allChecked = true;
+    
+    groupCheckboxes.forEach(checkbox => {
+      let isInGroup = false;
+      
+      if (group === 'ma' && checkbox.id.startsWith('ind-ma') && checkbox.id !== 'ind-ma-all') {
+        isInGroup = true;
+      } else if (group === 'trend' && checkbox.id.startsWith('ind-trend') && checkbox.id !== 'ind-trend-all') {
+        isInGroup = true;
+      } else if (group === 'bb' && checkbox.id.startsWith('ind-bb') && checkbox.id !== 'ind-bb-all') {
+        isInGroup = true;
+      }
+      
+      if (isInGroup && !checkbox.checked) {
+        allChecked = false;
+      }
+    });
+    
+    allCheckbox.checked = allChecked;
+  }
+
+  // Handle "ALL" checkbox for each group
+  document.querySelectorAll('input[type="checkbox"].group-all').forEach(allCheckbox => {
+    allCheckbox.addEventListener('change', function() {
+      const group = this.dataset.group;
+      const groupCheckboxes = document.querySelectorAll('input[data-indicator]');
+      
+      isUpdatingFromAll = true;
+      
+      groupCheckboxes.forEach(checkbox => {
+        let isInGroup = false;
+        
+        if (group === 'ma' && checkbox.id.startsWith('ind-ma') && checkbox.id !== 'ind-ma-all') {
+          isInGroup = true;
+        } else if (group === 'trend' && checkbox.id.startsWith('ind-trend') && checkbox.id !== 'ind-trend-all') {
+          isInGroup = true;
+        } else if (group === 'bb' && checkbox.id.startsWith('ind-bb') && checkbox.id !== 'ind-bb-all') {
+          isInGroup = true;
+        }
+        
+        if (isInGroup) {
+          checkbox.checked = this.checked;
+          checkbox.dispatchEvent(new Event('change'));
+        }
+      });
+      
+      isUpdatingFromAll = false;
+      console.log('Group "' + group + '" toggled to:', this.checked);
     });
   });
 
@@ -1256,6 +1369,144 @@
     if (event.key === 'Escape') {
       closeOptionsModal();
     }
+  });
+
+  /* ======================================================================
+    CHART RENDERING: FINANCIAL DATA (TAB 2)
+  ====================================================================== */
+  let financialChartInstance = null;
+  
+  function initFinancialChart() {
+    const ctx = document.getElementById('financialChart');
+    if (!ctx) return;
+
+    // Prepare data
+    const statsData = raw.stats.a;
+    const years = statsData.date || [];
+    
+    // Map Korean indicator names to data keys
+    const indicatorMap = {
+      marketcap: { key: 'marketcap', name: '시가총액', yAxisID: 'y' },
+      revenue: { key: 'revenue', name: '매출액', yAxisID: 'y' },
+      operating_income: { key: 'operating_income', name: '영업이익', yAxisID: 'y' },
+      net_income: { key: 'net_income', name: '당기순이익', yAxisID: 'y' },
+      operating_margin: { key: 'operating_margin', name: '영업이익률', yAxisID: 'y1' }
+    };
+
+    // Color palette for left y-axis bars
+    const colorMap = {
+      marketcap: 'rgba(54, 162, 235, 0.8)',      // Blue
+      revenue: 'rgba(75, 192, 192, 0.8)',        // Teal
+      operating_income: 'rgba(153, 102, 255, 0.8)', // Purple
+      net_income: 'rgba(255, 159, 64, 0.8)',     // Orange
+      operating_margin: 'rgba(255, 99, 132, 1)'  // Red for line
+    };
+
+    const datasets = [];
+
+    // Create datasets for checked indicators
+    ['marketcap', 'revenue', 'operating_income', 'net_income'].forEach(indicator => {
+      const checkbox = document.getElementById(`fin-${indicator.replace(/_/g, '-')}`);
+      const label = indicatorMap[indicator].name;
+      if (checkbox && checkbox.checked && statsData[label]) {
+        datasets.push({
+          label: label,
+          data: statsData[label],
+          backgroundColor: colorMap[indicator],
+          borderColor: colorMap[indicator],
+          borderWidth: 1,
+          yAxisID: 'y',
+          type: 'bar',
+          order: 2
+        });
+      }
+    });
+
+    // Add operating margin (right y-axis, line chart)
+    const marginCheckbox = document.getElementById('fin-operating-margin');
+    if (marginCheckbox && marginCheckbox.checked && statsData.영업이익률) {
+      datasets.push({
+        label: indicatorMap.operating_margin.name,
+        data: statsData.영업이익률,
+        borderColor: colorMap.operating_margin,
+        borderWidth: 2.5,
+        fill: false,
+        tension: 0.4,
+        yAxisID: 'y1',
+        type: 'line',
+        pointRadius: 4,
+        pointBackgroundColor: colorMap.operating_margin,
+        order: 1
+      });
+    }
+
+    financialChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          title: {
+            display: true,
+            text: '연간 재무 지표'
+          }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: '금액 (억원)'
+            },
+            beginAtZero: true
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: '영업이익률 (%)'
+            },
+            beginAtZero: true,
+            grid: {
+              drawOnChartArea: false
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Initialize financial chart when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure DOM is ready
+    setTimeout(initFinancialChart, 100);
+  });
+
+  // Handle financial indicator checkboxes
+  document.querySelectorAll('input[type="checkbox"][id^="fin-"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      // Reinitialize the chart with new data
+      if (financialChartInstance) {
+        financialChartInstance.destroy();
+      }
+      initFinancialChart();
+    });
   });
 
 </script>
