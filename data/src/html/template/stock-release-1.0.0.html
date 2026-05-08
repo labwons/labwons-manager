@@ -1461,6 +1461,15 @@
           title: {
             display: true,
             text: '연간 재무 지표'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.parsed.y !== null ? context.parsed.y : '';
+                return `${label}: ${value.toLocaleString()} 억원`;                
+              }
+            }
           }
         },
         scales: {
