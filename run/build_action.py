@@ -4,12 +4,17 @@ import os
 
 
 if __name__ == "__main__":
-    if lws.HOST == 'github_action':
-        lw.login_krx(os.environ['KRX_ID'], os.environ['KRX_PW'])
-
     logger = lw.Logger(console=True)
     logger(f'RUNS ON {lws.HOST.upper()} / {lws.RUNTIME.upper()}'.replace("WORKFLOW_", ""))
     logger(f'- RUN TIME: {os.environ.get("TIMESTAMP", "*")}')
+
+    try:
+        if lws.HOST == 'github_action':
+            lw.login_krx(os.environ['KRX_ID'], os.environ['KRX_PW'])
+            logger('- KRX LOG IN SUCCESS')
+    except (KeyError, ValueError, Exception) as e:
+        logger(f'- KRX LOG IN FAILED: {e}')
+
     baseline = lws.Baseline(logger=logger)
     if lws.HOST == 'github_action':
         baseline.number.progress_bar = False
