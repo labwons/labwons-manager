@@ -2,7 +2,6 @@
     "baseline": {
         "date": "20260601 15:30",
         "log": [
-            "baseline-20260526.parquet",
             "baseline-20260527.parquet",
             "baseline-20260528.parquet",
             "baseline-20260529.parquet",
@@ -21,7 +20,8 @@
             "baseline-20260616.parquet",
             "baseline-20260617.parquet",
             "baseline-20260618.parquet",
-            "baseline-20260619.parquet"
+            "baseline-20260619.parquet",
+            "baseline-20260622.parquet"
         ]
     },
     "market": {
