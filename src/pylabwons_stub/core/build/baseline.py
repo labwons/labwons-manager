@@ -188,11 +188,6 @@ class Baseline(DataFrameHeir):
 
 
 if __name__ == "__main__":
-    import os
-    os.environ['KRX_ID'] = 'jhlee0319'
-    os.environ['KRX_PW'] = 'dwg!4r4r6y1q'
-    lw.login_krx(os.environ['KRX_ID'], os.environ['KRX_PW'])
-
     baseline = Baseline()
     # print(baseline.market.date)
     # print(baseline)
