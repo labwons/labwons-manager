@@ -46,6 +46,8 @@ class Number(DataFrameHeir):
         else:
             loop = enumerate(tickers[1:])
 
+        print(tickers[0])
+        print(obj)
         objs = [obj.numbers]
         for n, ticker in loop:
             obj = FnGuide(ticker)

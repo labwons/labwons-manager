@@ -44,6 +44,7 @@ class Market(DataFrameHeir):
         objs.append(self("MARKET RETURN", self.fetch_returns, close=close))
 
         try:
+            objs = [df[~df.index.duplicated()] for df in objs]
             data = pd.concat(objs, axis=1)
             data = data[data['market'].isin(['kosdaq', 'kospi'])]
             data['tradingDate'] = str(self.td.latest)

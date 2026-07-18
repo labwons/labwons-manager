@@ -1,5 +1,3 @@
-import xlsxwriter
-
 from pylabwons_stub.schema.dataframe import DataFrameHeir
 from pylabwons_stub.schema.const.baseline import BASELINE
 from pylabwons_stub.core.fetch.market import Market
@@ -12,7 +10,7 @@ from typing import Callable, List, Union
 import numpy as np
 import pandas as pd
 import pylabwons as lw
-import json, os
+import json, os, xlsxwriter
 pd.set_option('display.expand_frame_repr', False)
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -148,7 +146,8 @@ class Baseline(DataFrameHeir):
                 self.logger(f'>>> FAILED TO BUILD SECTOR: {e}')
 
         if 'number' in tickets:
-            base = self.market[self.market['marketCap'] >= self.market['marketCap'].median()]
+            base = self.market[self.market['marketCap'] >= self.market['marketCap'].median()] \
+                  .sort_values(by='marketCap', ascending=False)
             try:
                 self.number.fetch(*base.index)
                 self.number.to_parquet(PATH.PARQUET.NUMBER, engine='pyarrow')
@@ -189,33 +188,18 @@ class Baseline(DataFrameHeir):
 
 
 if __name__ == "__main__":
+    import os
+    os.environ['KRX_ID'] = 'jhlee0319'
+    os.environ['KRX_PW'] = 'dwg!4r4r6y1q'
+    lw.login_krx(os.environ['KRX_ID'], os.environ['KRX_PW'])
+
     baseline = Baseline()
     # print(baseline.market.date)
     # print(baseline)
     # print(baseline.columns)
-    # baseline.build('baseline')
+    baseline.build('number')
     # baseline.market.to_excel(PATH.DOWNLOADS / 'market.xlsx')
     # baseline.number.to_excel(PATH.DOWNLOADS / 'number.xlsx')
     # baseline.sector.to_excel(PATH.DOWNLOADS / 'sector.xlsx')
     print(baseline)
-
-    sort = baseline[(pd.to_numeric(baseline['estimatedEpsGrowth'], errors='coerce') >= 100) |
-                    (baseline['estimatedEpsGrowth'].astype(str) == '흑자전환')]
-    print(sort)
-
-    sort = sort[sort['trailingPe'] >= sort['forwardPe']]
-    print(sort)
-
-    sort = sort[sort['fiscalDebtRatio'] <= 150]
-    print(sort)
-
-    sort = sort[sort['forwardPe'] <= sort['industryPe']]
-    print(sort)
-
-    sort = sort[sort['returnOn6Months'] < sort['returnOn1Year']]
-    print(sort)
-
-    # for n, df in sort.groupby('industryName'):
-    #     print(n, '-' * 50)
-    #     # print(df)
-    #     print(df.describe())
+    print(baseline.log)
