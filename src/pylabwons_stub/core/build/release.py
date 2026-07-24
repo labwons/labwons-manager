@@ -33,7 +33,7 @@ class Release(Baseline):
     @property
     def build_note(self) -> str:
         date = str(self.logger)[:10]
-        note = f"[{self.ID}]\n| https://labwons.com"
+        note = f"[{self.ID}] https://labwons.com\n"
         for line in str(self.logger).splitlines():
             if not line.startswith(date):
                 continue
